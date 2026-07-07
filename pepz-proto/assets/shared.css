@@ -1,0 +1,652 @@
+/* ================= PEPZ shared chrome =================
+   Loaded by EVERY page (index + subpages), after the page's own styles.
+   Contains: the floating quiz bubble + popover, and the pepz.com-style
+   footer grid. Relies on the CSS custom properties (--brand, --bg-rgb,
+   --brand-glow-rgb, --fg, --muted-fg, --border, --primary-fg) defined by
+   the page's own stylesheet (index inline CSS or product.css). */
+
+/* ---------------- floating quiz bubble ---------------- */
+@keyframes pq-glow-pulse{
+  0%,100%{ box-shadow:0 0 22px rgba(var(--brand-glow-rgb),0.35); }
+  50%{ box-shadow:0 0 40px rgba(var(--brand-glow-rgb),0.6); }
+}
+.pq-fab{
+  position:fixed;
+  left:22px; bottom:22px;
+  z-index:640;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 20px 12px 14px;
+  border-radius:100px;
+  border:1px solid var(--brand);
+  background:rgba(var(--bg-rgb),0.55);
+  backdrop-filter:blur(14px) saturate(1.4);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);
+  color:var(--fg);
+  cursor:pointer;
+  animation:pq-glow-pulse 3.2s ease-in-out infinite;
+  transition:transform .2s ease;
+}
+.pq-fab:hover{ transform:translateY(-2px); }
+.pq-fab.is-open{ animation:none; box-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.3); }
+.pq-fab-icon{
+  width:34px;height:34px;
+  flex:none;
+  border-radius:50%;
+  border:1px solid var(--brand);
+  color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+}
+.pq-fab-label{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+@media (max-width:600px){
+  .pq-fab{ padding:12px; }
+  .pq-fab-label{ display:none; }
+}
+
+/* ---------------- quiz popover ---------------- */
+.pq-pop{
+  position:fixed;
+  left:22px; bottom:92px;
+  z-index:641;
+  width:min(430px, calc(100vw - 32px));
+  max-height:min(660px, calc(100vh - 130px));
+  display:none;
+  flex-direction:column;
+  border-radius:20px;
+  border:1px solid rgba(var(--brand-glow-rgb),0.35);
+  background:rgba(6,14,16,0.94);
+  backdrop-filter:blur(18px) saturate(1.4);
+  -webkit-backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+  overflow:hidden;
+  color:var(--fg);
+}
+html.theme-her .pq-pop{ background:rgba(253,245,250,0.96); }
+@keyframes pq-pop-in{ from{ opacity:0; transform:translateY(14px) scale(.98); } to{ opacity:1; transform:none; } }
+.pq-pop.open{ display:flex; animation:pq-pop-in .3s cubic-bezier(.16,1,.3,1); }
+@media (max-width:600px){
+  .pq-pop{ left:16px; bottom:84px; }
+}
+.pq-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 18px 12px;
+  border-bottom:1px solid rgba(var(--brand-glow-rgb),0.2);
+}
+.pq-head-title{
+  font-family:'Syncopate',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.pq-head-title span{ color:var(--brand); }
+.pq-close{
+  width:30px;height:30px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--fg);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:border-color .2s ease;
+}
+.pq-close:hover{ border-color:var(--brand); }
+.pq-rail{
+  display:flex;
+  gap:8px;
+  padding:12px 18px 0;
+}
+.pq-dot{
+  width:28px;height:28px;
+  flex:none;
+  border-radius:50%;
+  border:1px solid var(--brand);
+  color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syncopate',sans-serif;
+  font-size:9px;
+  font-weight:700;
+  opacity:.4;
+  transition:opacity .2s ease, background .2s ease, color .2s ease;
+}
+.pq-dot.is-current{ opacity:1; }
+.pq-dot.is-done{ opacity:1; background:var(--brand); color:var(--primary-fg); }
+html.theme-her .pq-dot.is-done{ color:#ffffff; }
+.pq-body{
+  padding:16px 18px 18px;
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+.pq-body::-webkit-scrollbar{ display:none; }
+.pq-step{ display:none; }
+@keyframes pq-step-in{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+.pq-step.is-active{ display:block; animation:pq-step-in .3s cubic-bezier(.16,1,.3,1); }
+.pq-step h4{
+  font-family:'Syncopate',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  line-height:1.35;
+  margin:0 0 6px;
+}
+.pq-hint{ margin:0 0 16px; font-size:12px; color:var(--muted-fg); }
+.pq-input{
+  width:100%;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(var(--brand-glow-rgb),0.4);
+  color:var(--fg);
+  font-size:19px;
+  font-weight:600;
+  padding:8px 2px 10px;
+  outline:none;
+  transition:border-color .2s ease;
+}
+.pq-input:focus{ border-bottom-color:var(--brand); }
+.pq-input::placeholder{ color:var(--muted-fg); opacity:.6; }
+.pq-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:0 0 12px;
+}
+.pq-tag{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--brand);
+}
+.pq-count{ font-size:10px; letter-spacing:.06em; color:var(--muted-fg); }
+.pq-tiles{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.pq-tile{
+  position:relative;
+  border-radius:14px;
+  border:1px solid rgba(var(--brand-glow-rgb),0.3);
+  overflow:hidden;
+  cursor:pointer;
+  padding:0;
+  background:none;
+  min-height:110px;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.pq-tile-photo{
+  position:absolute; inset:0;
+  background-size:cover;
+  background-position:center;
+  opacity:.75;
+  transition:opacity .2s ease;
+}
+.pq-tile::after{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 45%, rgba(0,0,0,.68) 100%);
+}
+.pq-tile:hover{ border-color:var(--brand); }
+.pq-tile-label{
+  position:absolute; left:10px; right:10px; bottom:9px;
+  z-index:2;
+  text-align:left;
+  color:#ffffff;
+  font-family:'Syncopate',sans-serif;
+  font-weight:700;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.7);
+}
+.pq-tile-check{
+  position:absolute; top:8px; right:8px;
+  z-index:2;
+  width:24px;height:24px;
+  border-radius:50%;
+  border:1px solid var(--brand);
+  background:rgba(5,5,5,.5);
+  color:var(--brand);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.pq-tile.selected{ border-color:var(--brand); box-shadow:0 0 16px rgba(var(--brand-glow-rgb),.35); }
+.pq-tile.selected .pq-tile-photo{ opacity:1; }
+.pq-tile.selected .pq-tile-check{ opacity:1; }
+.pq-opts{ display:flex; flex-wrap:wrap; gap:8px; }
+.pq-chip{
+  padding:9px 14px;
+  border-radius:100px;
+  border:1px solid rgba(var(--brand-glow-rgb),0.35);
+  background:transparent;
+  color:var(--fg);
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  transition:border-color .2s ease, background .2s ease, color .2s ease;
+}
+.pq-chip:hover{ border-color:var(--brand); }
+.pq-chip.selected{ background:var(--brand); border-color:var(--brand); color:var(--primary-fg); }
+html.theme-her .pq-chip.selected{ color:#ffffff; }
+.pq-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:18px;
+}
+.pq-btn{
+  padding:11px 22px;
+  border-radius:100px;
+  border:none;
+  background:var(--brand);
+  color:var(--primary-fg);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:filter .2s ease, opacity .2s ease;
+}
+html.theme-her .pq-btn{ color:#ffffff; }
+.pq-btn:hover{ filter:brightness(1.1); }
+.pq-btn[disabled]{ opacity:.4; pointer-events:none; }
+.pq-backbtn{
+  background:none;
+  border:none;
+  color:var(--muted-fg);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:color .2s ease;
+}
+.pq-backbtn:hover{ color:var(--brand); }
+.pq-results{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:0 0 12px;
+}
+.pq-result{
+  display:flex;
+  flex-direction:column;
+  border-radius:14px;
+  border:1px solid rgba(var(--brand-glow-rgb),0.3);
+  background:rgba(255,255,255,0.03);
+  overflow:hidden;
+  text-decoration:none;
+  color:inherit;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+html.theme-her .pq-result{ background:rgba(255,255,255,0.7); }
+.pq-result:hover{ border-color:var(--brand); box-shadow:0 0 14px rgba(var(--brand-glow-rgb),.25); }
+.pq-result-photo{
+  aspect-ratio:1/1;
+  background-size:cover;
+  background-position:center;
+  background-color:#0a0a0a;
+}
+.pq-result-body{ padding:10px 12px; }
+.pq-result-name{
+  display:block;
+  font-family:'Syncopate',sans-serif;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--fg);
+  margin:0 0 3px;
+}
+.pq-result-why{
+  display:block;
+  font-size:10px;
+  color:var(--muted-fg);
+  line-height:1.45;
+}
+.pq-warn{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin:0 0 12px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(231,0,11,0.45);
+  background:rgba(231,0,11,0.08);
+  font-size:11px;
+  line-height:1.5;
+  color:var(--fg);
+}
+.pq-warn svg{ flex:none; margin-top:1px; color:#e7000b; }
+.pq-notes{ margin:0 0 8px; padding:0; list-style:none; }
+.pq-notes li{
+  font-size:11px;
+  color:var(--muted-fg);
+  line-height:1.5;
+  margin:0 0 5px;
+  padding-left:14px;
+  position:relative;
+}
+.pq-notes li::before{ content:"—"; position:absolute; left:0; color:var(--brand); }
+.pq-also{ margin:0 0 10px; font-size:11px; color:var(--muted-fg); }
+.pq-also b{ color:var(--fg); font-weight:600; }
+.pq-disclaimer{ margin:0; font-size:10px; color:var(--muted-fg); }
+
+/* ---------------- pepz.com-style footer ---------------- */
+.pepz-footer{
+  position:relative;
+  z-index:2;
+  border-top:1px solid rgba(var(--brand-glow-rgb),0.25);
+  padding:56px 40px 32px;
+}
+.pepz-footer-grid{
+  max-width:1200px;
+  margin:0 auto 40px;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+}
+.pepz-footer-brand .logo{ font-size:28px; }
+.pepz-footer-tagline{
+  margin:14px 0 10px;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--muted-fg);
+  font-style:italic;
+}
+.pepz-footer-note{
+  margin:0;
+  font-size:12px;
+  line-height:1.6;
+  color:var(--muted-fg);
+  max-width:340px;
+}
+.pepz-footer-col h5{
+  margin:6px 0 14px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--fg);
+}
+.pepz-footer-col ul{ margin:0; padding:0; list-style:none; }
+.pepz-footer-col li{ margin:0 0 9px; }
+.pepz-footer-col a{
+  font-size:13px;
+  color:var(--muted-fg);
+  text-decoration:none;
+  transition:color .2s ease;
+}
+.pepz-footer-col a:hover{ color:var(--brand); }
+.pepz-footer-trust{
+  max-width:1200px;
+  margin:0 auto 28px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:14px 34px;
+  padding-top:28px;
+  border-top:1px solid var(--border);
+}
+.pepz-footer-trust span{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  color:var(--muted-fg);
+}
+.pepz-footer-trust svg{ width:16px;height:16px; color:var(--brand); flex:none; }
+.pepz-footer-bottom{
+  text-align:center;
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--muted-fg);
+}
+.pepz-footer-bottom a{ color:var(--muted-fg); }
+.pepz-footer-bottom a:hover{ color:var(--brand); }
+@media (max-width:900px){
+  .pepz-footer{ padding:44px 20px 28px; }
+  .pepz-footer-grid{ grid-template-columns:1fr 1fr; gap:28px; }
+  .pepz-footer-brand{ grid-column:1 / -1; }
+}
+
+/* ================= shared header / nav / drawer =================
+   Loaded after product.css, so these override the older flat header on
+   the standalone pages (products/science/about/legal/PDPs/goals) and give
+   them the same floating glass pill + in-header nav as the homepage. */
+.site-header{
+  position:fixed;
+  /* side inset matches the sections' 40px side padding */
+  top:14px; left:40px; right:40px;
+  height:64px;
+  z-index:200;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 26px;
+  border-radius:18px;
+  background:rgba(var(--bg-rgb),0.38);
+  backdrop-filter:blur(18px) saturate(1.5);
+  -webkit-backdrop-filter:blur(18px) saturate(1.5);
+  border:1px solid rgba(var(--brand-glow-rgb),0.45);
+  border-bottom:1px solid rgba(var(--brand-glow-rgb),0.45);
+  box-shadow:0 10px 34px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition:border-color .3s ease, background .3s ease;
+}
+.header-nav{
+  display:flex;
+  align-items:center;
+  gap:clamp(14px, 1.7vw, 28px);
+  margin:0 24px;
+  min-width:0;
+}
+.header-nav a{
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.6px;
+  text-transform:uppercase;
+  color:var(--fg);
+  opacity:0.6;
+  position:relative;
+  white-space:nowrap;
+  text-decoration:none;
+  transition:opacity .2s ease, color .2s ease;
+}
+.header-nav a:hover{ opacity:1; color:var(--brand); }
+.header-nav a.active{ opacity:1; }
+.header-nav a.active::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-8px;
+  height:1px;
+  background:var(--brand);
+}
+.header-actions .hamburger-btn{ display:none; }
+
+.mobile-nav-drawer{
+  display:none;
+  position:fixed; inset:0; z-index:250;
+  background:rgba(0,0,0,0.55);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+.mobile-nav-drawer.open{ opacity:1; pointer-events:auto; }
+.mobile-nav-panel{
+  position:absolute; top:0; right:0; bottom:0;
+  width:min(340px, 84vw);
+  background:#0b0b0b;
+  color:#ffffff;
+  padding:28px 28px 32px;
+  display:flex;
+  flex-direction:column;
+  gap:32px;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.16,.84,.44,1);
+  box-shadow:-12px 0 40px rgba(0,0,0,0.4);
+}
+.mobile-nav-drawer.open .mobile-nav-panel{ transform:translateX(0); }
+.mobile-nav-close{ align-self:flex-end; color:#ffffff; }
+.mobile-nav-links{ display:flex; flex-direction:column; gap:22px; margin-top:4px; }
+.mobile-nav-links a{
+  color:#ffffff;
+  opacity:.6;
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:opacity .2s ease, color .2s ease;
+}
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active{ opacity:1; color:var(--brand); }
+
+/* below 1200px the in-header nav hands off to the hamburger + drawer,
+   matching the homepage breakpoint */
+@media (max-width:1200px){
+  .header-nav{ display:none; }
+  .header-actions .hamburger-btn{ display:flex; }
+  .mobile-nav-drawer{ display:block; }
+}
+@media (max-width:900px){
+  .site-header{ top:12px; left:12px; right:12px; padding:0 20px; border-radius:18px; height:72px; }
+}
+@media (max-width:560px){
+  .header-actions .pdp-book{ display:none; }
+}
+
+/* PDP/goal pages: the flat header used no top offset; the floating pill
+   needs the page body pushed down so content clears it */
+.pdp{ padding-top:132px; }
+
+/* mobile drawer action buttons (account + Book Consultation) */
+.mobile-nav-actions{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.15);
+}
+.mobile-nav-actions .icon-btn{ color:#ffffff; flex:none; gap:8px; width:auto; border-radius:999px; padding:0 14px; }
+.mobile-nav-actions .icon-btn span{ font-size:13px; font-weight:700; text-transform:uppercase; }
+.mobile-nav-actions .btn-primary{ flex:1; }
+
+/* ================= shared animated background + perf toggle =================
+   #siteGradientBg (static radial glow) + #grainientCanvas (animated WebGL
+   Grainient) on every page; the footer's toggle turns the animation off. */
+  #siteGradientBg{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 78% 20%, rgba(var(--brand-glow-rgb),0.10), transparent 40%),
+      radial-gradient(circle at 15% 70%, rgba(var(--brand-glow-rgb),0.08), transparent 40%);
+  }
+  /* Grainient — animated warped-gradient WebGL layer (adapted from the
+     React Bits <Grainient /> component to vanilla WebGL2, see the module
+     script near the end of the file). Replaces the old three.js particle
+     canvas: a single fullscreen fragment shader, far cheaper than 700
+     additively-blended sprites, so it runs on mobile too. No CSS blur —
+     the shader's own grain/softness does the work (blur on a fixed
+     fullscreen canvas was a constant compositing cost). */
+  #grainientCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:0.9;
+    transition:opacity .8s ease;
+  }
+  #grainientCanvas.hidden{opacity:0;}
+
+
+  .perf-toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:0 0 24px;
+  }
+  .perf-toggle-label{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--muted-fg);
+  }
+  /* Same on/off pill-switch shape used nowhere else yet on the site, but
+     built from the same visual language as everything else here: brand-
+     color border/fill, glow-pulse-friendly transitions, rounded-full. */
+  .perf-toggle{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    width:42px;height:24px;
+    flex:none;
+    cursor:pointer;
+  }
+  .perf-toggle input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    margin:0;
+    cursor:pointer;
+  }
+  .perf-toggle-track{
+    position:absolute;
+    inset:0;
+    border-radius:100px;
+    border:1px solid var(--brand);
+    background:transparent;
+    transition:background .2s ease;
+  }
+  .perf-toggle input:checked ~ .perf-toggle-track{
+    background:rgba(var(--brand-glow-rgb),0.35);
+  }
+  .perf-toggle-thumb{
+    position:absolute;
+    top:2px;left:2px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:var(--muted-fg);
+    transition:transform .2s cubic-bezier(.16,.84,.44,1), background .2s ease;
+  }
+  .perf-toggle input:checked ~ .perf-toggle-track .perf-toggle-thumb{
+    transform:translateX(18px);
+    background:var(--brand);
+  }
+  .perf-toggle input:focus-visible ~ .perf-toggle-track{
+    box-shadow:0 0 0 2px rgba(var(--brand-glow-rgb),0.4);
+  }
+
+
+/* Keep the ambient background layers BEHIND page content everywhere.
+   product.css pages don't give their content a stacking context (unlike the
+   homepage sections at z-index:2), so without this the fixed canvas paints
+   over the content. Negative z-index sits above the body background but
+   below all in-flow content. */
+#siteGradientBg, #grainientCanvas{ z-index:-1; }
+
+/* Mobile: once the hamburger + drawer take over (<=1200px), the header's
+   own account icon and Book button move into the drawer — hide the header
+   copies so the account icon doesn't appear twice. */
+@media (max-width:1200px){
+  .header-actions #accountBtn,
+  .header-actions .pdp-book,
+  .header-actions #bookConsultBtn{ display:none !important; }
+}

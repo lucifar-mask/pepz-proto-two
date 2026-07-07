@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('pepz-theme')==='her')document.documentElement.classList.add('theme-her');}catch(e){}</script>
+<link rel="stylesheet" href="assets/product.css">
+<link rel="stylesheet" href="assets/shared.css">
+<title>Products — PEPZ</title>
+<meta name="description" content="The full PEPZ peptide catalog — pharmaceutical-grade, physician-prescribed, third-party tested.">
+<style>
+  /* products section styles carried over from the homepage */
+  /* ---------- OUR PRODUCTS ----------
+     Now a normal section inside the continuous scroll (right after Explore
+     the Molecules), not a separate routed page.
+
+     Theme: the Him/Her switch lives in the global header now (next to the
+     account icon) and toggles html.theme-her, which re-themes the WHOLE
+     site (see the ":root"/"html.theme-her" block near the top) — cyan/dark
+     -> pink/light. Everything below just references var(--brand)/var(--bg)/
+     var(--fg) etc, so it re-themes for free. A couple of spots (COMING SOON
+     badge text, filter-chip/pill text) still need an explicit white-on-pink
+     override even though the general --primary-fg stays black — confirmed
+     real per Figma nodes 30:612 (FOR HIM, black-on-cyan) vs 32:274 (FOR HER,
+     white-on-pink), an intentional per-gender detail, not normalized away. */
+  #productsView{
+    background:transparent; /* global ambient background shows through, see top of file */
+    min-height:100vh;
+    padding:160px 40px 100px;
+  }
+
+  .products-inner{max-width:1400px;margin:0 auto;}
+
+  .products-heading-row{margin-bottom:28px;}
+  .products-h1{
+    font-weight:900;
+    font-size:clamp(48px,9vw,96px);
+    text-transform:uppercase;
+    line-height:1;
+    margin:0;
+    color:var(--fg);
+  }
+  .products-h1 span{
+    color:var(--brand);
+    transition:color .3s ease;
+    animation:glow-pulse-text 3.2s ease-in-out infinite;
+  }
+  .products-sub{
+    font-weight:300;
+    font-size:clamp(22px,4vw,48px);
+    text-transform:uppercase;
+    color:var(--fg);
+    margin:4px 0 0;
+    letter-spacing:0.2px;
+  }
+
+  /* gender switch — lives in the header next to the account icon now, and
+     drives the ENTIRE site's theme (see the ":root"/"html.theme-her" custom
+     property block near the top of this stylesheet), not just Products. */
+  .gender-switch{
+    display:inline-flex;
+    gap:4px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:4px;
+    background:var(--muted-surface);
+  }
+  .gender-switch-btn{
+    border:none;
+    background:transparent;
+    color:var(--muted-fg);
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    padding:8px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .gender-switch-btn:hover{color:var(--fg);}
+  .gender-switch-btn.active{
+    background:var(--brand);
+    color:var(--primary-fg);
+  }
+  html.theme-her .gender-switch-btn.active{color:#ffffff;}
+
+  /* ALL + FILTER BY CATEGORY controls */
+  .products-controls{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .pill-btn{
+    border-radius:100px;
+    padding:12px 28px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease, color .2s ease;
+  }
+  .pill-solid{
+    border:none;
+    background:var(--brand);
+    color:var(--primary-fg);
+  }
+  .theme-her #productsView .pill-solid{color:#ffffff;}
+  .pill-solid:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--brand-glow-rgb),0.3);}
+  .theme-her #productsView .pill-solid:hover{box-shadow:0 6px 20px rgba(var(--brand-glow-rgb),0.3);}
+  .pill-outline{
+    border:1px solid var(--brand);
+    background:transparent;
+    color:var(--fg);
+  }
+  .pill-outline:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px);}
+  .pill-outline.active{background:var(--brand);color:var(--primary-fg);}
+  .theme-her #productsView .pill-outline.active{color:#ffffff;}
+
+  /* "Compounded in the USA" — stated once here in the controls row (applies
+     to the whole catalog) instead of repeated on every product card. */
+  .usa-note{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:11px 22px;
+    background:var(--destructive,#e7000b);
+    color:#ffffff;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+
+  /* filter panel — 4 multi-select category toggles + Apply */
+  .filter-panel{
+    display:none;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:20px;
+    margin:0 0 32px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:var(--card);
+  }
+  .filter-panel.open{display:flex;}
+  .filter-chip{
+    border:1px solid var(--brand);
+    background:transparent;
+    color:var(--fg);
+    border-radius:100px;
+    padding:10px 20px;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .filter-chip:hover{background:rgba(255,255,255,0.08);}
+  .filter-chip.selected{background:var(--brand);color:var(--primary-fg);}
+  .theme-her #productsView .filter-chip.selected{color:#ffffff;}
+  .filter-apply-btn{margin-left:auto;}
+
+  /* product grid */
+  .products-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(267px,267px));
+    gap:28px;
+    justify-content:start;
+    /* Cards size to their own content now (see .product-card below) rather
+       than a fixed height, so grid's default row-stretch would otherwise
+       force every card in a row to match the tallest one — align-items:
+       start keeps each card at its own natural height instead. */
+    align-items:start;
+  }
+  /* Card layout: originally every part (name/desc/divider/button) was
+     absolute-positioned at pixel offsets pulled from Figma. That broke the
+     moment real product data didn't match the Figma placeholder text —
+     a 2-line title (e.g. "CJC-1295 / IPAMORELIN") would overflow its fixed
+     slot and visually collide with the description sitting at its own
+     fixed offset right below. Rebuilt as a normal flex column instead: the
+     square photo (with the quick-add "+" and "Coming Soon" badge overlaid
+     on top of it, in .product-media) sits fixed at the top, then name /
+     description / divider / footer stack in-flow in .product-body — each
+     part pushes the next one down by its own real height, so nothing can
+     ever overlap regardless of how long any given title or description
+     is. min-height (not height) keeps cards visually consistent at the
+     old 560px when content is short, while letting a card grow taller
+     instead of clipping/colliding when content runs long. */
+  .product-card{
+    width:267px;
+    min-height:560px;
+    border-radius:25px;
+    border:1px solid var(--brand);
+    background:linear-gradient(180deg, var(--card) 0%, var(--bg) 100%);
+    display:flex;
+    flex-direction:column;
+    /* overflow:hidden so the photo (flush against the card's top corners)
+       can never paint over the card's own rounded border. */
+    overflow:hidden;
+    transition:opacity .35s ease, transform .35s ease, box-shadow .25s ease;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 40px rgba(var(--brand-glow-rgb),0.18);
+  }
+  .theme-her #productsView .product-card:hover{box-shadow:0 14px 40px rgba(var(--brand-glow-rgb),0.18);}
+  .product-card.card-hidden{
+    opacity:0;
+    transform:scale(.94);
+    pointer-events:none;
+    position:absolute;
+    visibility:hidden;
+  }
+  /* Part 1: photo + the "+" quick-add and "Coming Soon" badge overlaid on
+     top of it — the only part of the card where overlap is intentional. */
+  .product-media{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    flex:none;
+  }
+  .product-photo{
+    position:absolute;
+    inset:0;
+    border-radius:25px;
+    background-size:cover;
+    background-position:center;
+    background-color:#0a0a0a;
+  }
+  .product-quick-add{
+    position:absolute;
+    top:8px;right:8px;
+    width:53px;height:53px;
+    border-radius:50%;
+    background:rgba(15,15,15,0.55);
+    border:1px solid var(--brand);
+    color:var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .product-quick-add:hover{background:var(--brand);color:var(--primary-fg);transform:scale(1.05);}
+  /* "For Her": light frosted disc instead of the dark one — the dark circle
+     read as a gray blob over the light product photos */
+  html.theme-her .product-quick-add{
+    background:rgba(255,255,255,0.6);
+    border-color:var(--brand);
+  }
+  .theme-her #productsView .product-quick-add:hover{color:#ffffff;background:var(--brand);}
+  .coming-soon-badge{
+    position:absolute;
+    bottom:8px;left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:150px;height:36px;
+    background:var(--brand);
+    color:var(--primary-fg);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    border-radius:25px;
+  }
+  .theme-her #productsView .coming-soon-badge{color:#ffffff;}
+  /* Parts 2-5: title, description, divider, footer — plain in-flow flex
+     column, so each one's real rendered height (1 or 2 line title, short
+     or long description) pushes the next part down instead of everything
+     sitting at fixed offsets that assume a specific text length. */
+  .product-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:24px 29px 28px;
+  }
+  .product-name{
+    font-weight:700;
+    font-size:21px;
+    text-transform:uppercase;
+    line-height:1.15;
+    margin:0 0 8px;
+    color:var(--fg);
+  }
+  .product-desc{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--fg);
+    margin:0;
+    /* Fills whatever vertical space is left in the card (which has a
+       560px min-height) so the divider + button sit pinned near the
+       bottom when the description is short, same as the original Figma
+       spacing — but simply grows the card taller instead of overlapping
+       anything when a description runs long. */
+    flex:1;
+  }
+  .product-divider{
+    width:100%;height:1px;
+    margin:20px 0 0;
+    background:rgba(255,255,255,0.2);
+    flex:none;
+  }
+  .product-footer{
+    width:100%;
+    margin-top:16px;
+    flex:none;
+  }
+  .product-footer .btn-outline{
+    display:block;
+    width:100%;
+    padding:14px 16px;
+    font-size:12px;
+    text-align:center;
+    border-color:var(--brand);
+  }
+
+  .products-empty{
+    display:none;
+    color:var(--muted-fg);
+    font-size:15px;
+    padding:60px 0;
+    text-align:center;
+  }
+  .products-empty.show{display:block;}
+
+
+  #productsView{ padding-top:170px; }
+  @media (max-width:900px){ #productsView{ padding:150px 20px 80px; } }
+</style>
+</head>
+<body>
+<div id="siteGradientBg" aria-hidden="true"></div>
+<canvas id="grainientCanvas" aria-hidden="true"></canvas>
+
+<header class="site-header" id="siteHeader">
+  <a class="logo" href="index.html#home"><span>PEPZ</span>.</a>
+  <nav class="header-nav" aria-label="Primary">
+    <a href="index.html#home" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link active">Products</a>
+    <a href="science.html" class="nav-link">Science</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="legal.html" class="nav-link">Legal</a>
+  </nav>
+  <div class="header-actions">
+    <div class="gender-switch" role="tablist" aria-label="Shop by">
+      <button class="gender-switch-btn active" id="tabHim" data-gender="him" role="tab" aria-selected="true">For Him</button>
+      <button class="gender-switch-btn" id="tabHer" data-gender="her" role="tab" aria-selected="false">For Her</button>
+    </div>
+    <button class="icon-btn" id="accountBtn" aria-label="Account / Sign in">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="btn-primary pdp-book" id="bookConsultBtn">Book Consultation</button>
+    <button class="icon-btn hamburger-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+<div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+  <div class="mobile-nav-panel">
+    <button class="icon-btn mobile-nav-close" id="mobileNavCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="mobile-nav-links">
+      <a href="index.html#home" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Products</a>
+      <a href="science.html" class="nav-link">Science</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="legal.html" class="nav-link">Legal</a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <button class="icon-btn" id="mobileAccountBtn" aria-label="Account / Sign in">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Account</span>
+      </button>
+      <button class="btn-primary" id="mobileBookBtn">Book Consultation</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="productsView">
+    <div class="products-inner">
+
+      <div class="products-heading-row">
+        <h1 class="products-h1" id="productsH1">FOR <span id="genderAccentWord">HIM</span></h1>
+        <p class="products-sub" id="productsSub">Solutions for every man.</p>
+      </div>
+
+      <div class="products-controls">
+        <button class="pill-btn pill-solid active" id="allPillBtn">All</button>
+        <button class="pill-btn pill-outline" id="filterToggleBtn" aria-expanded="false">Filter by Category</button>
+        <span class="usa-note">Compounded in the USA &#127482;&#127480;</span>
+      </div>
+
+      <div class="filter-panel" id="filterPanel">
+        <button class="filter-chip" data-category="Muscle Recovery">Muscle Recovery</button>
+        <button class="filter-chip" data-category="Longevity">Longevity</button>
+        <button class="filter-chip" data-category="Beauty">Beauty</button>
+        <button class="filter-chip" data-category="Fitness">Fitness</button>
+        <button class="btn-primary pill-btn filter-apply-btn" id="applyFilterBtn">Apply</button>
+      </div>
+
+      <div class="products-grid" id="productsGrid"><!-- populated by JS from PRODUCT_CATALOG --></div>
+      <p class="products-empty" id="productsEmpty">No products match the selected categories yet.</p>
+
+    </div>
+  </section>
+</main>
+
+<footer class="pepz-footer">
+  <div class="perf-toggle-row">
+    <span class="perf-toggle-label">Animated background</span>
+    <label class="perf-toggle">
+      <input type="checkbox" id="particlesToggle" checked aria-label="Toggle animated gradient background">
+      <span class="perf-toggle-track"><span class="perf-toggle-thumb"></span></span>
+    </label>
+  </div>
+
+  <div class="pepz-footer-grid">
+    <div class="pepz-footer-brand">
+      <a class="logo" href="index.html#home"><span>PEPZ</span>.</a>
+      <p class="pepz-footer-tagline">&ldquo;Optimizing the human engine for the 21st century.&rdquo;</p>
+      <p class="pepz-footer-note">PEPZ is a technology platform, not a pharmacy. We connect patients with licensed physicians and accredited compounding pharmacies.</p>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Shop</h5>
+      <ul>
+        <li><a href="products.html">Fitness</a></li>
+        <li><a href="products.html">Longevity</a></li>
+        <li><a href="products.html">Beauty</a></li>
+        <li><a href="products.html">Recovery</a></li>
+      </ul>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><a href="legal.html#prescription-policy">Prescription Policy</a></li>
+        <li><a href="legal.html#lab-reports">Lab Reports</a></li>
+        <li><a href="legal.html#privacy">Privacy</a></li>
+        <li><a href="legal.html#terms">Terms</a></li>
+      </ul>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Connect</h5>
+      <ul>
+        <li><a href="#" rel="noopener">Instagram</a></li>
+        <li><a href="#" rel="noopener">Facebook</a></li>
+        <li><a href="#" rel="noopener">YouTube</a></li>
+        <li><a href="index.html#contact">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pepz-footer-trust">
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.9-6 8.2-3.4-1.3-6-4.2-6-8.2V4.7l6-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Rx-Verified Marketplace</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>HIPAA Compliant Infrastructure</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M8 3h4M8.5 3v4.2L4.8 14a1.6 1.6 0 0 0 1.4 2.4h7.6a1.6 1.6 0 0 0 1.4-2.4L11.5 7.2V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Third-Party Lab Tested &middot; COA Available</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.5v7M6.5 10h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>18+ Only &middot; Prescription Required</span>
+  </div>
+  <p class="pepz-footer-bottom">&copy; 2026 PEPZ BIO-TECH. ALL RIGHTS RESERVED. &middot; <a href="mailto:support@pepz.com">support@pepz.com</a></p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Full real pepz.com catalog, sourced from the client's own extracted
+     product photos (local files, no expiry). FOR HER is intentionally
+     limited to just the cream for now, per the client. */
+  var PRODUCT_CATALOG = [
+    // ---- FOR HIM (all real pepz.com products) ----
+    {
+      gender:'him', name:'BPC-157', slug:'bpc-157', category:'Muscle Recovery',
+      desc:'Core repair peptide for soft-tissue and muscle recovery, heavily used in athletic contexts.',
+      img:'assets/bpc-157-1-DvsU9HZn.png.png'
+    },
+    {
+      gender:'him', name:'TB-500', slug:'tb-500', category:'Muscle Recovery',
+      desc:'Angiogenesis-driving repair peptide paired with BPC-157 to speed healing in tendons, ligaments, and gut lining.',
+      img:'assets/tb-500-1-tvvZj_AE.png.png'
+    },
+    {
+      gender:'him', name:'Sermorelin', slug:'sermorelin', category:'Longevity',
+      desc:'GHRH analog that restores natural growth-hormone output — anti-aging benefits with support for lean muscle mass.',
+      img:'assets/sermorelin-1-C2d9qNKH.png.png'
+    },
+    {
+      gender:'him', name:'NAD+', slug:'nad-plus', category:'Longevity',
+      desc:'Restores mitochondrial energy production and supports circadian rhythm for deeper, more restorative sleep.',
+      img:'assets/nad-plus-1-BKLocQST.png.png'
+    },
+    {
+      gender:'him', name:'PT-141', slug:'pt-141', category:'Longevity',
+      desc:'Melanocortin peptide used to support sexual wellness and vitality.',
+      img:'assets/pt-141-1-D8L9njBl.png.png'
+    },
+    {
+      gender:'him', name:'CJC-1295 / Ipamorelin', slug:'cjc-1295-ipamorelin', category:'Fitness',
+      desc:'GH secretagogue combo widely used for lean mass, with secondary anti-aging and sleep benefits.',
+      img:'assets/cjc-1295-ipamorelin-1-JuJ36UDM.png.png'
+    },
+    {
+      gender:'him', name:'Tesamorelin', slug:'tesamorelin', category:'Fitness',
+      desc:'GHRH analog that supports lean muscle mass and metabolic health alongside natural growth-hormone pulses.',
+      img:'assets/tesamorelin-1-CRfOSXuX.png.png'
+    },
+    {
+      gender:'him', name:'MOTS-C', slug:'mots-c', category:'Fitness',
+      desc:'Mitochondrial-derived peptide that boosts exercise capacity and metabolic efficiency at the cellular level.',
+      img:'assets/mots-c-1-BcuMa1MT.png.png'
+    },
+    {
+      gender:'him', name:'GHK-Cu', slug:'ghk-cu', category:'Beauty',
+      desc:'Systemic copper peptide with broad anti-aging action plus skin, hair, and tissue-repair support.',
+      img:'assets/ghk-cu-1-vI4S7jS2.png.png'
+    },
+
+    // ---- FOR HER — only the cream for now, per the client ----
+    {
+      gender:'her', name:'GHK-Cu Cream', slug:'ghk-cu-cream', category:'Beauty',
+      desc:'Topical copper peptide for skin and hair, with anti-aging and anti-inflammatory support.',
+      // Pink-packaged "For Her" cream photo (client-provided), distinct from
+      // the blue-packaged ghk-cu-1 photo used in the "For Him" listing.
+      img:'assets/ghkcucreamwomen.png'
+    }
+  ];
+
+  function productCardHTML(p){
+    return (
+      '<article class="product-card" data-gender="' + p.gender + '" data-category="' + p.category + '"' +
+        (p.extended ? ' data-extended="true"' : '') + '>' +
+        '<div class="product-media">' +
+          '<div class="product-photo" style="background-image:url(\'' + p.img + '\')"></div>' +
+          '<button class="product-quick-add" aria-label="Quick add ' + p.name + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+          '</button>' +
+          '<span class="coming-soon-badge">Coming Soon</span>' +
+        '</div>' +
+        '<div class="product-body">' +
+          '<h3 class="product-name">' + p.name + '</h3>' +
+          '<p class="product-desc">' + p.desc + '</p>' +
+          '<div class="product-divider"></div>' +
+          '<div class="product-footer">' +
+            '<a class="btn-outline" href="products/' + p.slug + '.html">Learn More</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  var productsGrid = document.getElementById('productsGrid');
+  productsGrid.innerHTML = PRODUCT_CATALOG.map(productCardHTML).join('');
+
+  var productsH1 = document.getElementById('productsH1');
+  var genderAccentWord = document.getElementById('genderAccentWord');
+  var productsSub = document.getElementById('productsSub');
+  var allPillBtn = document.getElementById('allPillBtn');
+  var filterToggleBtn = document.getElementById('filterToggleBtn');
+  var filterPanel = document.getElementById('filterPanel');
+  var applyFilterBtn = document.getElementById('applyFilterBtn');
+  var filterChips = Array.prototype.slice.call(document.querySelectorAll('.filter-chip'));
+  var productsEmpty = document.getElementById('productsEmpty');
+
+  var currentGender = 'him';
+  var activeCategories = [];
+
+  var COPY = {
+    him: { word:'HIM', sub:'Solutions for every man.' },
+    her: { word:'HER', sub:'Solutions for every woman.' }
+  };
+
+  function applyFilters(){
+    var cards = Array.prototype.slice.call(productsGrid.querySelectorAll('.product-card'));
+    var anyVisible = false;
+    cards.forEach(function(card){
+      var matchesGender = card.dataset.gender === currentGender;
+      var matchesCategory = activeCategories.length === 0 || activeCategories.indexOf(card.dataset.category) !== -1;
+      var show = matchesGender && matchesCategory;
+      card.classList.toggle('card-hidden', !show);
+      if (show) anyVisible = true;
+    });
+    productsEmpty.classList.toggle('show', !anyVisible);
+  }
+
+  window.__pepzPageOnGender = function(isHer){
+    currentGender = isHer ? 'her' : 'him';
+    genderAccentWord.textContent = COPY[currentGender].word;
+    productsSub.textContent = COPY[currentGender].sub;
+    applyFilters();
+  };
+
+  allPillBtn.addEventListener('click', function(){
+    activeCategories = [];
+    filterChips.forEach(function(chip){ chip.classList.remove('selected'); });
+    allPillBtn.classList.add('active');
+    filterPanel.classList.remove('open');
+    filterToggleBtn.setAttribute('aria-expanded','false');
+    applyFilters();
+  });
+  filterToggleBtn.addEventListener('click', function(){
+    var open = filterPanel.classList.toggle('open');
+    filterToggleBtn.setAttribute('aria-expanded', String(open));
+  });
+  filterChips.forEach(function(chip){
+    chip.addEventListener('click', function(){ chip.classList.toggle('selected'); });
+  });
+  applyFilterBtn.addEventListener('click', function(){
+    activeCategories = filterChips
+      .filter(function(chip){ return chip.classList.contains('selected'); })
+      .map(function(chip){ return chip.dataset.category; });
+    allPillBtn.classList.toggle('active', activeCategories.length === 0);
+    applyFilters();
+  });
+
+  /* Him/Her switch: live re-theme + persisted so every page matches */
+  var tabHim = document.getElementById('tabHim');
+  var tabHer = document.getElementById('tabHer');
+  function setGender(g){
+    var isHer = g === 'her';
+    document.documentElement.classList.toggle('theme-her', isHer);
+    tabHim.classList.toggle('active', !isHer);
+    tabHim.setAttribute('aria-selected', String(!isHer));
+    tabHer.classList.toggle('active', isHer);
+    tabHer.setAttribute('aria-selected', String(isHer));
+    try { localStorage.setItem('pepz-theme', g); } catch(e){}
+    if (typeof window.__pepzPageOnGender === 'function') window.__pepzPageOnGender(isHer);
+  }
+  tabHim.addEventListener('click', function(){ setGender('him'); });
+  tabHer.addEventListener('click', function(){ setGender('her'); });
+  var stored = 'him';
+  try { stored = localStorage.getItem('pepz-theme') === 'her' ? 'her' : 'him'; } catch(e){}
+  setGender(stored);
+  var book = document.getElementById('bookConsultBtn');
+  if (book) book.addEventListener('click', function(){ window.location.href = 'index.html#contact'; });
+})();
+
+  // account + mobile drawer buttons -> consultation flow
+  (function(){
+    var dest = 'index.html#contact';
+    ['accountBtn','mobileAccountBtn','mobileBookBtn'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', function(){ window.location.href = dest; });
+    });
+    window.__pepzWireActions = true;
+  })();
+</script>
+<script src="assets/grainient.js" defer></script>
+<script src="assets/quiz.js" defer></script>
+</body>
+</html>

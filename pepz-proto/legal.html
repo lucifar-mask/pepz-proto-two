@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('pepz-theme')==='her')document.documentElement.classList.add('theme-her');}catch(e){}</script>
+<link rel="stylesheet" href="assets/product.css">
+<link rel="stylesheet" href="assets/shared.css">
+<title>Legal — PEPZ</title>
+<meta name="description" content="PEPZ legal policies: Prescription Policy, Lab Reports & Quality Assurance, Privacy Policy, and Terms of Service.">
+<style>
+  .lg-wrap{ display:flex; align-items:flex-start; gap:48px; max-width:1100px; margin:0 auto; padding:150px 40px 90px; }
+  .lg-nav{ position:sticky; top:120px; flex:none; width:230px; display:flex; flex-direction:column; gap:2px; }
+  .lg-nav button{
+    text-align:left;
+    background:none; border:none;
+    border-left:2px solid transparent;
+    padding:10px 14px;
+    font-size:14px;
+    color:var(--muted-fg);
+    cursor:pointer;
+    transition:color .2s ease, border-color .2s ease;
+  }
+  .lg-nav button:hover{ color:var(--fg); }
+  .lg-nav button.active{ color:var(--brand); border-left-color:var(--brand); font-weight:600; }
+  .lg-content{ flex:1; min-width:0; max-width:760px; }
+  .lg-doc{ display:none; }
+  .lg-doc.active{ display:block; animation:lg-in .3s ease; }
+  @keyframes lg-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  .lg-doc h1{ font-family:'Syncopate',sans-serif; font-weight:700; font-size:clamp(24px,3vw,36px); text-transform:uppercase; margin:0 0 6px; }
+  .lg-updated{ font-size:12px; color:var(--muted-fg); margin:0 0 28px; }
+  .lg-doc h2{ font-size:18px; font-weight:700; margin:28px 0 10px; }
+  .lg-doc p{ font-size:15px; line-height:1.75; color:var(--fg); margin:0 0 16px; }
+  .lg-intro{ color:var(--muted-fg) !important; }
+  @media (max-width:900px){
+    .lg-wrap{ flex-direction:column; gap:0; padding:120px 20px 60px; }
+    .lg-nav{ position:static; width:100%; flex-direction:row; flex-wrap:wrap; gap:6px; margin:0 0 28px; }
+    .lg-nav button{ border-left:none; border:1px solid rgba(var(--brand-glow-rgb),0.3); border-radius:100px; padding:8px 14px; font-size:12px; }
+    .lg-nav button.active{ background:rgba(var(--brand-glow-rgb),0.12); }
+  }
+</style>
+</head>
+<body>
+<div id="siteGradientBg" aria-hidden="true"></div>
+<canvas id="grainientCanvas" aria-hidden="true"></canvas>
+
+<header class="site-header" id="siteHeader">
+  <a class="logo" href="index.html#home"><span>PEPZ</span>.</a>
+  <nav class="header-nav" aria-label="Primary">
+    <a href="index.html#home" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="science.html" class="nav-link">Science</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="legal.html" class="nav-link active">Legal</a>
+  </nav>
+  <div class="header-actions">
+    <div class="gender-switch" role="tablist" aria-label="Shop by">
+      <button class="gender-switch-btn active" id="tabHim" data-gender="him" role="tab" aria-selected="true">For Him</button>
+      <button class="gender-switch-btn" id="tabHer" data-gender="her" role="tab" aria-selected="false">For Her</button>
+    </div>
+    <button class="icon-btn" id="accountBtn" aria-label="Account / Sign in">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="btn-primary pdp-book" id="bookConsultBtn">Book Consultation</button>
+    <button class="icon-btn hamburger-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+<div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+  <div class="mobile-nav-panel">
+    <button class="icon-btn mobile-nav-close" id="mobileNavCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="mobile-nav-links">
+      <a href="index.html#home" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Products</a>
+      <a href="science.html" class="nav-link">Science</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="legal.html" class="nav-link">Legal</a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <button class="icon-btn" id="mobileAccountBtn" aria-label="Account / Sign in">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Account</span>
+      </button>
+      <button class="btn-primary" id="mobileBookBtn">Book Consultation</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="lg-wrap">
+    <nav class="lg-nav" id="lgNav" aria-label="Legal documents">
+      <button type="button" data-doc="prescription-policy" class="active">Prescription Policy</button>
+      <button type="button" data-doc="lab-reports">Lab Reports</button>
+      <button type="button" data-doc="privacy">Privacy</button>
+      <button type="button" data-doc="terms">Terms</button>
+    </nav>
+
+    <div class="lg-content">
+
+      <article class="lg-doc active" data-doc="prescription-policy">
+        <h1>Prescription Policy</h1>
+        <p class="lg-updated">Last updated: June 15, 2026</p>
+        <p class="lg-intro">PEPZ is a technology platform that connects patients with licensed physicians and accredited compounding pharmacies. All peptide products available through our platform require a valid prescription from a licensed healthcare provider.</p>
+        <h2>1. Medical Consultation Required</h2>
+        <p>Before any peptide product can be dispensed, you must complete a telehealth consultation with one of our partnered physicians. The physician will evaluate your medical history, current health status, and treatment goals to determine if peptide therapy is appropriate for you.</p>
+        <h2>2. Prescription Validity</h2>
+        <p>Prescriptions issued through our platform are valid for a maximum of 90 days from the date of issue. Refills require a follow-up consultation to ensure continued medical appropriateness. Prescriptions are non-transferable and can only be filled at our partnered compounding pharmacies.</p>
+        <h2>3. Compounding Pharmacy Partners</h2>
+        <p>We exclusively work with 503A and 503B compounding pharmacies that meet or exceed USP &lt;797&gt; and USP &lt;795&gt; standards. All compounded medications are prepared using pharmaceutical-grade APIs (Active Pharmaceutical Ingredients) sourced from FDA-registered suppliers.</p>
+        <h2>4. Patient Eligibility</h2>
+        <p>You must be 18 years of age or older to use our services. Certain medical conditions may preclude you from receiving peptide therapy, including but not limited to active cancer, pregnancy, and certain cardiovascular conditions. The prescribing physician has final discretion on all treatment decisions.</p>
+      </article>
+
+      <article class="lg-doc" data-doc="lab-reports">
+        <h1>Lab Reports &amp; Quality Assurance</h1>
+        <p class="lg-updated">Last updated: June 15, 2026</p>
+        <p class="lg-intro">Quality and purity are foundational to everything we do. Every batch of peptides dispensed through our platform undergoes rigorous third-party testing before reaching patients.</p>
+        <h2>1. Third-Party Testing</h2>
+        <p>All peptide APIs are tested by independent ISO 17025-accredited laboratories. Testing includes HPLC (High-Performance Liquid Chromatography) for purity verification, mass spectrometry for identity confirmation, and endotoxin testing for safety assurance.</p>
+        <h2>2. Certificate of Analysis (COA)</h2>
+        <p>A Certificate of Analysis is available for every batch of medication dispensed. COAs include detailed purity percentages, identity confirmation data, and microbial testing results. Patients may request COA documentation through their account dashboard or by contacting our support team.</p>
+        <h2>3. Storage &amp; Handling</h2>
+        <p>Our pharmacy partners maintain cold-chain storage for temperature-sensitive compounds. Peptides requiring refrigeration are stored at 2&ndash;8&deg;C and shipped with validated cold-chain packaging to ensure stability during transit.</p>
+        <h2>4. Batch Tracking</h2>
+        <p>Every vial and package is assigned a unique batch number for complete traceability. In the unlikely event of a quality concern, we can rapidly identify and recall specific batches to ensure patient safety.</p>
+      </article>
+
+      <article class="lg-doc" data-doc="privacy">
+        <h1>Privacy Policy</h1>
+        <p class="lg-updated">Last updated: June 15, 2026</p>
+        <p class="lg-intro">PEPZ Bio-Tech Inc. ("PEPZ," "we," "us," or "our") is committed to protecting your privacy and personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.</p>
+        <h2>1. Information We Collect</h2>
+        <p>We collect personal information necessary to provide our services, including your name, contact details, medical history, consultation notes, and prescription information. We also collect technical data such as IP addresses and device information for security purposes.</p>
+        <h2>2. HIPAA Compliance</h2>
+        <p>As a healthcare technology platform, we are fully compliant with the Health Insurance Portability and Accountability Act (HIPAA). All protected health information (PHI) is encrypted in transit and at rest using AES-256 encryption. Our infrastructure is hosted in SOC 2 Type II certified data centers.</p>
+        <h2>3. How We Use Your Information</h2>
+        <p>Your information is used solely to facilitate healthcare services, including physician consultations, prescription processing, and pharmacy fulfillment. We do not sell your personal information to third parties. We may share information with our partnered physicians and pharmacies solely for the purpose of providing your care.</p>
+        <h2>4. Your Rights</h2>
+        <p>You have the right to access, correct, and delete your personal information. You may also request a copy of your medical records at any time. To exercise these rights, please contact our privacy officer at privacy@pepz.com.</p>
+      </article>
+
+      <article class="lg-doc" data-doc="terms">
+        <h1>Terms of Service</h1>
+        <p class="lg-updated">Last updated: June 15, 2026</p>
+        <p class="lg-intro">Welcome to PEPZ. These Terms of Service ("Terms") govern your access to and use of the PEPZ platform, website, and services (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms.</p>
+        <h2>1. Medical Disclaimer</h2>
+        <p>PEPZ is not a healthcare provider. We are a technology platform that facilitates connections between patients, licensed physicians, and compounding pharmacies. The information provided on our platform is for educational purposes only and does not constitute medical advice. Always consult with a qualified healthcare provider before making any medical decisions.</p>
+        <h2>2. Eligibility</h2>
+        <p>You must be at least 18 years old and capable of entering into a binding contract to use our Services. By using PEPZ, you represent and warrant that you meet these eligibility requirements.</p>
+        <h2>3. Account Security</h2>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account or any other breach of security.</p>
+        <h2>4. Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, PEPZ shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or relating to your use of our Services. Our total liability shall not exceed the amount you paid for the specific service giving rise to the claim.</p>
+        <h2>5. Governing Law</h2>
+        <p>These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Any disputes arising under these Terms shall be resolved exclusively in the state and federal courts located in Delaware.</p>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+<footer class="pepz-footer">
+  <div class="perf-toggle-row">
+    <span class="perf-toggle-label">Animated background</span>
+    <label class="perf-toggle">
+      <input type="checkbox" id="particlesToggle" checked aria-label="Toggle animated gradient background">
+      <span class="perf-toggle-track"><span class="perf-toggle-thumb"></span></span>
+    </label>
+  </div>
+
+  <div class="pepz-footer-grid">
+    <div class="pepz-footer-brand">
+      <a class="logo" href="index.html#home"><span>PEPZ</span>.</a>
+      <p class="pepz-footer-tagline">&ldquo;Optimizing the human engine for the 21st century.&rdquo;</p>
+      <p class="pepz-footer-note">PEPZ is a technology platform, not a pharmacy. We connect patients with licensed physicians and accredited compounding pharmacies.</p>
+    </div>
+    <div class="pepz-footer-col"><h5>Shop</h5><ul><li><a href="products.html">Fitness</a></li><li><a href="products.html">Longevity</a></li><li><a href="products.html">Beauty</a></li><li><a href="products.html">Recovery</a></li></ul></div>
+    <div class="pepz-footer-col"><h5>Legal</h5><ul><li><a href="legal.html#prescription-policy">Prescription Policy</a></li><li><a href="legal.html#lab-reports">Lab Reports</a></li><li><a href="legal.html#privacy">Privacy</a></li><li><a href="legal.html#terms">Terms</a></li></ul></div>
+    <div class="pepz-footer-col"><h5>Connect</h5><ul><li><a href="#" rel="noopener">Instagram</a></li><li><a href="#" rel="noopener">Facebook</a></li><li><a href="#" rel="noopener">YouTube</a></li><li><a href="index.html#contact">Support</a></li></ul></div>
+  </div>
+  <div class="pepz-footer-trust">
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.9-6 8.2-3.4-1.3-6-4.2-6-8.2V4.7l6-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Rx-Verified Marketplace</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>HIPAA Compliant Infrastructure</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M8 3h4M8.5 3v4.2L4.8 14a1.6 1.6 0 0 0 1.4 2.4h7.6a1.6 1.6 0 0 0 1.4-2.4L11.5 7.2V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Third-Party Lab Tested &middot; COA Available</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.5v7M6.5 10h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>18+ Only &middot; Prescription Required</span>
+  </div>
+  <p class="pepz-footer-bottom">&copy; 2026 PEPZ BIO-TECH. ALL RIGHTS RESERVED. &middot; <a href="mailto:support@pepz.com">support@pepz.com</a></p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll('.lg-nav button'));
+  var docs = Array.prototype.slice.call(document.querySelectorAll('.lg-doc'));
+  function show(id){
+    if (!id || !document.querySelector('.lg-doc[data-doc="' + id + '"]')) id = 'prescription-policy';
+    navBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.doc === id); });
+    docs.forEach(function(d){ d.classList.toggle('active', d.dataset.doc === id); });
+    if (history.replaceState) history.replaceState(null, '', '#' + id);
+    else location.hash = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  navBtns.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.doc); }); });
+  window.addEventListener('hashchange', function(){ show((location.hash || '').replace('#','')); });
+  show((location.hash || '').replace('#',''));
+
+  var tabHim = document.getElementById('tabHim');
+  var tabHer = document.getElementById('tabHer');
+  function setGender(g){
+    var isHer = g === 'her';
+    document.documentElement.classList.toggle('theme-her', isHer);
+    tabHim.classList.toggle('active', !isHer);
+    tabHim.setAttribute('aria-selected', String(!isHer));
+    tabHer.classList.toggle('active', isHer);
+    tabHer.setAttribute('aria-selected', String(isHer));
+    try { localStorage.setItem('pepz-theme', g); } catch(e){}
+  }
+  tabHim.addEventListener('click', function(){ setGender('him'); });
+  tabHer.addEventListener('click', function(){ setGender('her'); });
+  var stored = 'him';
+  try { stored = localStorage.getItem('pepz-theme') === 'her' ? 'her' : 'him'; } catch(e){}
+  setGender(stored);
+  var book = document.getElementById('bookConsultBtn'); if (book) book.addEventListener('click', function(){ window.location.href = 'index.html#contact'; });
+})();
+
+  // account + mobile drawer buttons -> consultation flow
+  (function(){
+    var dest = 'index.html#contact';
+    ['accountBtn','mobileAccountBtn','mobileBookBtn'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', function(){ window.location.href = dest; });
+    });
+    window.__pepzWireActions = true;
+  })();
+</script>
+<script src="assets/grainient.js" defer></script>
+<script src="assets/quiz.js" defer></script>
+</body>
+</html>

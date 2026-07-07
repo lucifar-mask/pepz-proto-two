@@ -1,0 +1,3656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEPZ. Peptides, Prescribed.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Aileron (body text) — self-hosted, not on Google Fonts. Files sourced from
+     Font Squirrel's Aileron kit (by dot colon), licensed CC0 1.0 Universal /
+     Public Domain — see assets/fonts/Aileron-LICENSE.txt. */
+  @font-face{
+    font-family:'Aileron';
+    src:url('assets/fonts/Aileron-Light.woff2') format('woff2');
+    font-weight:300;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Aileron';
+    src:url('assets/fonts/Aileron-Regular.woff2') format('woff2');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Aileron';
+    src:url('assets/fonts/Aileron-SemiBold.woff2') format('woff2');
+    font-weight:600;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Aileron';
+    src:url('assets/fonts/Aileron-Bold.woff2') format('woff2');
+    font-weight:700;
+    font-style:normal;
+    font-display:swap;
+  }
+  :root{
+    --bg:#050505;
+    --bg-rgb:5,5,5; /* R,G,B triplet for --bg, same purpose as --brand-glow-rgb:
+      lets chrome like the header's translucent blur background re-theme too. */
+    --card:#0f0f0f;
+    --muted-surface:#141414;
+    --brand:#2fb8c7; /* muted teal-cyan (was a pure neon #00f0ff) — same hue
+      family, dialed back so borders/glows/text read as a calm accent rather
+      than a saturated highlighter color. */
+    --brand-glow-rgb:47,184,199; /* same value as --brand, as an R,G,B triplet so
+      it can be dropped into rgba(var(--brand-glow-rgb), alpha) for every glow/
+      shadow in the file — lets a single global theme swap (see html.theme-her
+      below) re-tint every glow effect site-wide, not just solid fills. */
+    --fg:#ffffff;
+    --muted-fg:#888888;
+    --destructive:#e7000b;
+    --border:rgba(255,255,255,0.08);
+    --input:rgba(255,255,255,0.10);
+    --primary-fg:#000000;
+    --placeholder-rgb:255,255,255; /* R,G,B triplet for the Contact form's
+      oversized placeholder text (Figma: rgba(255,255,255,0.6) on the dark
+      theme) so it flips to black-based in "For Her" instead of staying
+      invisible white-on-white. */
+    --nav-w:230px;
+  }
+
+  /* ---------- GLOBAL "For Her" theme ----------
+     Toggled via a class on <html> (see the header gender switch + its JS),
+     so it re-themes the ENTIRE site at once, not just the Products section:
+     cyan -> pink/magenta accent, black bg -> white bg, white text -> black
+     text. Because virtually every color in this file is expressed through
+     these custom properties (or the --brand-glow-rgb triplet above), most of
+     the page re-themes automatically from this one block. */
+  html.theme-her{
+    --bg:#ffffff;
+    --bg-rgb:255,255,255;
+    --card:#ffffff;
+    --muted-surface:#f7f2f6;
+    --brand:#f2607a; /* coral pink — warmer/more coral than the old
+      rose-magenta, matching the feminine hero video. */
+    --brand-glow-rgb:242,96,122;
+    --fg:#000000;
+    --muted-fg:#6b5a68;
+    --border:rgba(0,0,0,0.12);
+    --input:rgba(0,0,0,0.12);
+    --placeholder-rgb:0,0,0;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4,h5,h6{
+    font-family:'Syncopate',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  /* logo keeps Space Grotesk (per client), everything else uses Syncopate (display) / Inter (body), matching pepz.com */
+  .logo{
+    font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+
+  /* ---------- Shared glow-pulse system ----------
+     Every "glowing" cyan-branded element should visibly breathe, not sit at a
+     static intensity. Same spirit as the titleGlow keyframe in the client's
+     three.js orbit demo: a subtle, slow oscillation, not a distracting flash.
+     Two flavors: text-shadow (headline/label glows) and box-shadow (borders/
+     buttons/icons/orbs). Durations vary slightly (2.5–3.5s) per element so
+     multiple glowing things on screen don't pulse in obvious lockstep. */
+  @keyframes glow-pulse-text{
+    0%,100%{ text-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.35), 0 0 34px rgba(var(--brand-glow-rgb),0.18); }
+    50%{ text-shadow:0 0 34px rgba(var(--brand-glow-rgb),0.75), 0 0 60px rgba(var(--brand-glow-rgb),0.4); }
+  }
+  @keyframes glow-pulse-border{
+    0%,100%{ box-shadow:0 0 10px rgba(var(--brand-glow-rgb),0.18), 0 0 0 1px rgba(var(--brand-glow-rgb),0.35) inset; }
+    50%{ box-shadow:0 0 22px rgba(var(--brand-glow-rgb),0.42), 0 0 0 1px rgba(var(--brand-glow-rgb),0.6) inset; }
+  }
+  @keyframes glow-pulse-shadow{
+    0%,100%{ box-shadow:0 0 28px rgba(var(--brand-glow-rgb),0.4); }
+    50%{ box-shadow:0 0 48px rgba(var(--brand-glow-rgb),0.7); }
+  }
+  @keyframes glow-pulse-icon{
+    0%,100%{ box-shadow:0 0 8px rgba(var(--brand-glow-rgb),0.35); }
+    50%{ box-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.65); }
+  }
+
+  /* ---------- GLOBAL AMBIENT BACKGROUND ----------
+     One shared gradient + animated Grainient layer sits fixed behind every section
+     (not tied to scroll position), replacing what used to be each
+     section's own background treatment (this is the same soft glow that
+     used to live only in One Mission's .mission-bg, now promoted to a
+     global layer). Both are inserted as the very first children of <body>
+     — with no explicit z-index they still correctly sit BEHIND every
+     section, because same-stack-level elements paint in DOM order, and
+     every section comes later in the document. Explore the Molecules keeps
+     its own opaque #050505 background and already-sharp dedicated particle
+     scene, so these two layers are simply covered (invisible) there, and
+     are paused via IntersectionObserver purely so we're not rendering two
+     three.js canvases at once for no visible benefit (see the pause/resume
+     script near the bg-particles module below). */
+  #siteGradientBg{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 78% 20%, rgba(var(--brand-glow-rgb),0.10), transparent 40%),
+      radial-gradient(circle at 15% 70%, rgba(var(--brand-glow-rgb),0.08), transparent 40%);
+  }
+  /* Grainient — animated warped-gradient WebGL layer (adapted from the
+     React Bits <Grainient /> component to vanilla WebGL2, see the module
+     script near the end of the file). Replaces the old three.js particle
+     canvas: a single fullscreen fragment shader, far cheaper than 700
+     additively-blended sprites, so it runs on mobile too. No CSS blur —
+     the shader's own grain/softness does the work (blur on a fixed
+     fullscreen canvas was a constant compositing cost). */
+  #grainientCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:0.9;
+    transition:opacity .8s ease;
+  }
+  #grainientCanvas.hidden{opacity:0;}
+
+  /* ---------- Layout shell ---------- */
+  /* Floating glass header: inset from the viewport edges, fully rounded,
+     frosted-glass backdrop (blur + saturate) with a soft brand-tinted
+     border instead of the old full-width bottom-ruled bar. */
+  .site-header{
+    position:fixed;
+    /* side inset matches the sections' 40px side padding so the header
+       edges line up with the content columns */
+    top:14px;left:40px;right:40px;
+    height:64px;
+    z-index:200;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 26px;
+    border-radius:18px;
+    background:rgba(var(--bg-rgb),0.38);
+    backdrop-filter:blur(18px) saturate(1.5);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);
+    border:1px solid rgba(var(--brand-glow-rgb),0.45);
+    box-shadow:
+      0 10px 34px rgba(0,0,0,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    transition:border-color .3s ease, background .3s ease;
+  }
+  @media (max-width:900px){
+    .site-header{ top:10px;left:20px;right:20px; padding:0 18px; border-radius:16px; height:60px; }
+  }
+  /* Context-aware header for "For Her": her theme flips text dark for the
+     light sections, but the hero video stays dark in both themes — while
+     the header floats over it (.on-dark, toggled by the section
+     IntersectionObserver), the tint deepens and all header text/icons
+     (including the logo's ".") go white. Over light sections it falls back
+     to the theme's dark-on-light. No-op in "For Him" (already white). */
+  html.theme-her .site-header.on-dark{
+    background:rgba(10,8,12,0.42);
+  }
+  html.theme-her .site-header.on-dark .logo,
+  html.theme-her .site-header.on-dark .header-nav a,
+  html.theme-her .site-header.on-dark .icon-btn{
+    color:#ffffff;
+  }
+  /* (the Him/Her switch keeps its own light track + dark labels — white
+     text there would vanish against the track) */
+  .logo{
+    font-weight:900;
+    font-size:34px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .logo span{color:var(--brand);}
+  .header-actions{display:flex;align-items:center;gap:24px;}
+
+  /* ---------- Mobile hamburger + drawer ----------
+     Hidden entirely above 900px (see the shared mobile media query at the
+     bottom of this stylesheet), so on desktop/tablet the existing
+     accountBtn/bookConsultBtn/side-nav keep working exactly as before.
+     Selector is ".header-actions .hamburger-btn" (not just ".hamburger-btn")
+     on purpose: the base ".icon-btn{display:flex}" rule further down the
+     stylesheet has equal specificity, so source order would otherwise let
+     it win and show the hamburger on desktop too — the extra ancestor
+     class here outranks it regardless of order. */
+  .header-actions .hamburger-btn{ display:none; }
+  .mobile-nav-drawer{
+    display:none;
+    position:fixed; inset:0; z-index:250;
+    background:rgba(0,0,0,0.55);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .mobile-nav-drawer.open{ opacity:1; pointer-events:auto; }
+  .mobile-nav-panel{
+    position:absolute; top:0; right:0; bottom:0;
+    width:min(340px, 84vw);
+    /* Pinned dark regardless of theme (not var(--card)/var(--fg)): this is
+       an overlay panel, not page content, so it gets its own always-dark
+       treatment rather than flipping white in "For Her" — consistent with
+       how #home/#explore-molecules stay dark in both themes. */
+    background:#0b0b0b;
+    color:#ffffff;
+    padding:28px 28px 32px;
+    display:flex;
+    flex-direction:column;
+    gap:32px;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.16,.84,.44,1);
+    box-shadow:-12px 0 40px rgba(0,0,0,0.4);
+  }
+  .mobile-nav-drawer.open .mobile-nav-panel{ transform:translateX(0); }
+  .mobile-nav-close{ align-self:flex-end; color:#ffffff; }
+  .mobile-nav-links{ display:flex; flex-direction:column; gap:22px; margin-top:4px; }
+  .mobile-nav-links a{
+    color:#ffffff;
+    opacity:.6;
+    font-size:17px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    transition:opacity .2s ease, color .2s ease;
+  }
+  .mobile-nav-links a.active{ opacity:1; color:var(--brand); }
+  .mobile-nav-actions{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding-top:20px;
+    border-top:1px solid rgba(255,255,255,0.15);
+  }
+  .mobile-nav-actions .icon-btn{ color:#ffffff; flex:none; gap:8px; width:auto; border-radius:999px; padding:0 14px; }
+  .mobile-nav-actions .icon-btn span{ font-size:13px; font-weight:700; text-transform:uppercase; }
+  .mobile-nav-actions .btn-primary{ flex:1; }
+
+  /* ---------- Unified button system ----------
+     Button states approximated from real BOOK CONSULTATION styling — exact Figma
+     BUTTONS frame (node 35:274) states pending Figma quota reset. .btn-primary
+     below is the Figma-verified ground truth (confirmed real data from an earlier
+     pull); .btn-outline, .icon-btn, and the circular icon-buttons (.goal-plus,
+     .modal-close, .row-arrow, .play-btn) are aligned to the same hover-lift /
+     active-press language so every button on the site behaves consistently:
+       - static:            base style below
+       - hover:             brighter glow + slight lift (translateY(-1px))
+       - active/clicked:    scale(.97) press + a brief glow intensity spike
+                             that settles back down (glow-pop keyframe)
+       - clicked+hovered:   active press takes precedence while still hovered
+  */
+  @keyframes btn-glow-pop{
+    0%{ box-shadow:0 6px 20px rgba(var(--brand-glow-rgb),0.25); }
+    40%{ box-shadow:0 4px 28px rgba(var(--brand-glow-rgb),0.55); }
+    100%{ box-shadow:0 4px 14px rgba(var(--brand-glow-rgb),0.3); }
+  }
+  @keyframes btn-glow-pop-outline{
+    0%{ box-shadow:0 0 0 rgba(var(--brand-glow-rgb),0); }
+    40%{ box-shadow:0 0 22px rgba(var(--brand-glow-rgb),0.45); }
+    100%{ box-shadow:0 0 10px rgba(var(--brand-glow-rgb),0.2); }
+  }
+
+  .btn-primary{
+    background:var(--brand);
+    color:var(--primary-fg);
+    border:none;
+    border-radius:15px;
+    padding:14px 24px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn-primary:hover{
+    transform:translateY(-1px);
+    box-shadow:0 6px 24px rgba(var(--brand-glow-rgb),0.4);
+    filter:brightness(1.05);
+  }
+  .btn-primary:active{
+    transform:translateY(0) scale(.97);
+    animation:btn-glow-pop .4s ease-out;
+  }
+
+  .btn-outline{
+    background:transparent;
+    color:var(--fg);
+    border:1px solid var(--brand);
+    border-radius:15px;
+    padding:13px 24px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease;
+  }
+  .btn-outline:hover{
+    background:rgba(var(--brand-glow-rgb),0.1);
+    transform:translateY(-1px);
+    box-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.25);
+  }
+  .btn-outline:active{
+    transform:translateY(0) scale(.97);
+    /* matches Figma BUTTONS frame (35:274) "CLICKED" state exactly: the
+       outline button flips to a solid cyan fill with dark text on press,
+       then settles back to outline once released. */
+    background:var(--brand);
+    color:var(--primary-fg);
+    animation:btn-glow-pop-outline .4s ease-out;
+  }
+
+  /* circular icon buttons (account icon, modal close, card +/x, row arrow,
+     play button) share the same hover-lift / active-press behavior */
+  .icon-btn{
+    width:38px;height:38px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--fg);
+    cursor:pointer;
+    transition:border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .icon-btn:hover{
+    border-color:var(--brand);
+    transform:translateY(-1px);
+    box-shadow:0 0 14px rgba(var(--brand-glow-rgb),0.3);
+  }
+  .icon-btn:active{
+    transform:translateY(0) scale(.97);
+    animation:btn-glow-pop-outline .4s ease-out;
+  }
+
+  /* ---------- Header nav (was the fixed side nav) ----------
+     Lives inside the floating glass header between the logo and the
+     actions cluster. The glass backdrop guarantees contrast everywhere,
+     so the old "on-dark" section-tracking hack isn't needed anymore.
+     Hidden under 1200px, where the hamburger + drawer take over. */
+  .header-nav{
+    display:flex;
+    align-items:center;
+    gap:clamp(14px, 1.7vw, 28px);
+    margin:0 24px;
+    min-width:0;
+  }
+  .header-nav a{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    color:var(--fg);
+    opacity:0.6;
+    position:relative;
+    white-space:nowrap;
+    transition:opacity .2s ease, color .2s ease;
+  }
+  .header-nav a:hover{opacity:1;color:var(--brand);}
+  .header-nav a.active{opacity:1;}
+  .header-nav a.active::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:-8px;
+    height:1px;
+    background:var(--brand);
+  }
+  @media (max-width:1200px){
+    .header-nav{display:none;}
+    /* hand navigation to the hamburger + drawer below 1200px (they used
+       to be mobile-only at 900px, when the side nav covered desktop) */
+    .header-actions .hamburger-btn{ display:flex; }
+    .mobile-nav-drawer{ display:block; }
+  }
+
+  section{
+    position:relative;
+    min-height:100vh;
+    width:100%;
+    overflow:hidden;
+  }
+  /* thin brand hairline separating every section (client liked the one on
+     the molecules section's glass edge — now consistent site-wide). The
+     hero is excluded (nothing above it); the footer gets its own. */
+  main > section:not(#home){
+    border-top:1px solid rgba(var(--brand-glow-rgb),0.25);
+  }
+  .site-footer{
+    border-top:1px solid rgba(var(--brand-glow-rgb),0.25);
+  }
+
+  /* ---------- SCROLL REVEAL ----------
+     Each section's inner container starts slightly shifted down + faded
+     out and eases in with an exponential-out curve the first time it
+     scrolls into view (IntersectionObserver JS adds .revealed, then
+     unobserves — it's a one-shot). .revealed ends at transform:none so no
+     lingering transform can break position:fixed descendants (the goal
+     card FLIP expansion inside .mission-inner relies on that). */
+  .reveal-target{
+    opacity:0;
+    transform:translateY(40px);
+    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal-target.revealed{
+    opacity:1;
+    transform:none;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .reveal-target{ opacity:1; transform:none; transition:none; }
+  }
+
+  /* ---------- HOME ---------- */
+  #home{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    /* headline block sits on the LEFT half of the hero */
+    align-items:flex-start;
+    text-align:left;
+    /* base layer now transparent — the global #siteGradientBg + blurred
+       particle canvas show through here instead of a section-local
+       gradient (see "GLOBAL AMBIENT BACKGROUND" above). The actual hero
+       photo lives on #home::before below and is untouched by this. */
+    background:transparent;
+  }
+  /* #home intentionally stays dark in BOTH themes (see the .hero-inner h1/
+     .hero-copy/.learn-more comment above): it's a fixed photo backdrop, not
+     the flat --bg surface, so it doesn't get a light "For Her" variant —
+     only the pink accent word and pink glow tint (via --brand-glow-rgb,
+     already applied above) change. */
+  /* Full-bleed hero video (assets/hero-him.mp4 / hero-her.mp4, swapped by
+     the header gender switch). Plays once, no loop — the element naturally
+     holds its last frame when playback ends. Crisp (no blur, per client);
+     the ::before overlay below only adds a light darkening gradient so the
+     white headline stays readable over the brighter video areas. */
+  .hero-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+    background:#050505;
+    /* slight overscan so the scroll parallax (translateY, see hero JS) can
+       shift the video without exposing its edges */
+    transform:scale(1.12);
+    will-change:transform;
+  }
+  #home::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    /* vertical legibility wash + extra darkening on the LEFT, where the
+       headline now lives */
+    background:
+      linear-gradient(90deg, rgba(5,5,5,0.42) 0%, rgba(5,5,5,0) 58%),
+      linear-gradient(180deg, rgba(5,5,5,0.30) 0%, rgba(5,5,5,0.05) 45%, rgba(5,5,5,0.35) 100%);
+  }
+  .hero-inner{
+    position:relative;
+    z-index:2;
+    max-width:880px;
+    padding:120px 24px 60px;
+    margin-left:clamp(24px, 5vw, 90px);
+    /* hidden until the hero video finishes — revealed together with the
+       Learn More CTA (same .show class, see hero video JS) */
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(22px);
+    transition:opacity 1s ease, transform 1s cubic-bezier(.16,1,.3,1), visibility 0s linear 1s;
+  }
+  .hero-inner.show{
+    opacity:1;
+    visibility:visible;
+    transform:none;
+    transition:opacity 1s ease, transform 1s cubic-bezier(.16,1,.3,1);
+  }
+  @media (max-width:900px){
+    /* phones: the video subject fills most of the frame, so recenter */
+    #home{ align-items:center; text-align:center; }
+    .hero-inner{ margin-right:0; }
+  }
+  /* #home keeps light text in BOTH themes: its background is a fixed dark,
+     blurred photo (#home::before below), not the flat --bg surface, so
+     flipping text to black for "For Her" would make it unreadable against
+     the still-dark photo. Only the accent word switches cyan/pink. */
+  .hero-inner h1{
+    font-weight:900;
+    /* sized for the right-hand column; Syncopate runs much wider than
+       the old Space Grotesk, so the cap keeps "UPGRADE YOUR" / "HUMAN
+       ENGINE" each on a single line */
+    font-size:clamp(34px,4.4vw,62px);
+    text-transform:uppercase;
+    line-height:1.05;
+    margin:0 0 28px;
+    color:#ffffff;
+  }
+  .hero-inner h1 .accent{
+    color:var(--brand);
+    animation:glow-pulse-text 3.2s ease-in-out infinite;
+  }
+  .hero-copy{
+    font-size:clamp(15px,1.4vw,21px);
+    font-weight:400;
+    color:#ffffff;
+    max-width:660px;
+    margin:0 0 44px;
+    line-height:1.5;
+  }
+  @media (max-width:900px){
+    .hero-copy{ margin:0 auto 48px; }
+  }
+  /* In-flow now: sits directly beneath the hero copy inside .hero-inner
+     (was absolutely pinned to the bottom-center of the section). Inherits
+     .hero-inner's hide-until-video-ends behavior, since it's inside it. */
+  .learn-more{
+    display:inline-flex;
+    /* arrow sits to the RIGHT of the label (was stacked below it), keeping
+       it clear of the dumbbells at the bottom of the hero video */
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+    margin-top:4px;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    color:#ffffff;
+    animation:bob 2.4s ease-in-out infinite;
+  }
+  .learn-more svg{width:16px;height:22px;}
+  @keyframes bob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(8px);}
+  }
+
+  /* ---------- ONE MISSION ----------
+     Wireframe layout (client sketch): four goal rows on the left, each a
+     link to its full goal page (goals/<goal>.html) with a "+" affordance;
+     a live preview panel on the right (photo + short summary) that follows
+     the hovered row. On phones this becomes a swipeable snap-carousel with
+     dots (see the max-width:900px query further down). */
+  #one-mission{
+    background:transparent;
+    padding-top:96px;
+    padding-left:40px;
+    padding-right:40px;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    min-height:100vh;
+  }
+  .mission-bg{
+    position:absolute;inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+  .mission-inner{
+    position:relative;
+    z-index:2;
+    max-width:1400px;
+    margin:0 auto;
+    width:100%;
+    padding:64px 0 40px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+  }
+  .mission-heading{
+    font-weight:900;
+    font-size:clamp(32px,5.5vw,96px);
+    text-transform:uppercase;
+    line-height:1.05;
+    margin:0 0 36px;
+  }
+  .mission-heading .accent{color:var(--brand);animation:glow-pulse-text 3s ease-in-out infinite;}
+
+  .mission-layout{
+    display:flex;
+    gap:28px;
+    flex:1;
+    min-height:0;
+  }
+  .mission-rows{
+    flex:1.05;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  /* Rows share the Explore the Molecules card design language: same dark
+     translucent surface, brand-glow border, and hover glow (see .mol-card),
+     with a light "For Her" variant to match. */
+  .mission-row{
+    flex:1;
+    min-height:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:0 28px;
+    border-radius:18px;
+    border:1px solid rgba(var(--brand-glow-rgb),0.3);
+    background:rgba(6,14,16,0.72);
+    cursor:pointer;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .mission-row:hover,
+  .mission-row.is-active{
+    border-color:var(--brand);
+    box-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.28);
+  }
+  html.theme-her .mission-row{
+    background:rgba(255,255,255,0.68);
+    border-color:rgba(var(--brand-glow-rgb),0.4);
+  }
+  .mission-row-title{
+    font-weight:700;
+    font-size:clamp(18px,1.8vw,26px);
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    line-height:1.15;
+    margin:0;
+    color:#f2fbfd;
+    transition:color .2s ease;
+  }
+  html.theme-her .mission-row-title{ color:#181218; }
+  .mission-row:hover .mission-row-title,
+  .mission-row.is-active .mission-row-title{ color:var(--brand); }
+  .mission-row-plus{
+    width:40px;height:40px;
+    flex:none;
+    border-radius:50%;
+    border:1px solid var(--brand);
+    color:var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s ease, transform .25s ease;
+  }
+  .mission-row:hover .mission-row-plus{
+    background:rgba(var(--brand-glow-rgb),0.15);
+  }
+  .mission-row-plus svg{width:16px;height:16px;}
+
+  .mission-detail{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
+  .mission-detail-photo{
+    flex:1;
+    min-height:0;
+    border-radius:25px;
+    border:1px solid var(--border);
+    background-size:cover;
+    /* --mission-par: scroll-driven parallax offset, set on #one-mission by
+       the parallax JS near the end of the file */
+    background-position:center calc(50% + var(--mission-par, 0px));
+    transition:opacity .22s ease;
+  }
+  .mission-detail-photo.is-fading{ opacity:0; }
+  .mission-detail-text{
+    margin:18px 0 0;
+    font-size:clamp(14px,1.15vw,16px);
+    line-height:1.6;
+    color:var(--muted-fg);
+  }
+  .mission-detail-text b{ font-weight:700; color:var(--fg); }
+
+  /* goal photos (him) + "For Her" swaps — shared by the desktop preview
+     panel and the mobile carousel slides */
+  [data-goal-photo="muscle-recovery"]{ background-image:url('assets/mission-muscle-recovery-male.jpg'); }
+  [data-goal-photo="longevity"]{ background-image:url('assets/mission-longevity-male.jpg'); }
+  [data-goal-photo="beauty"]{ background-image:url('assets/mission-beauty-male.jpg'); }
+  [data-goal-photo="fitness"]{ background-image:url('assets/mission-fitness-male.jpg'); }
+  html.theme-her [data-goal-photo="muscle-recovery"]{ background-image:url('assets/mission-muscle-recovery-female.jpg'); }
+  html.theme-her [data-goal-photo="longevity"]{ background-image:url('assets/mission-longevity-female.jpg'); }
+  html.theme-her [data-goal-photo="beauty"]{ background-image:url('assets/mission-beauty-female.jpg'); }
+  html.theme-her [data-goal-photo="fitness"]{ background-image:url('assets/mission-fitness-female.jpg'); }
+
+  /* ---- Mobile swipe carousel (shown under 900px in place of the rows) ---- */
+  .mission-carousel-wrap{ display:none; }
+  .mission-carousel{
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .mission-carousel::-webkit-scrollbar{ display:none; }
+  .mission-slide{
+    position:relative;
+    flex:0 0 100%;
+    scroll-snap-align:center;
+    display:block;
+  }
+  .mission-slide-photo{
+    height:58vw;
+    max-height:380px;
+    border-radius:20px;
+    border:1px solid var(--border);
+    background-size:cover;
+    background-position:center;
+  }
+  .mission-slide-pill{
+    position:absolute;
+    top:12px;left:12px;
+    padding:7px 14px;
+    border-radius:100px;
+    border:1px solid var(--brand);
+    background:rgba(5,5,5,0.55);
+    color:#ffffff;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+  }
+  /* small "+" affordance on each slide (same language as the molecule
+     cards' plus) — the whole slide is a link to the goal page already */
+  .mission-slide-plus{
+    position:absolute;
+    bottom:12px;right:12px;
+    width:38px;height:38px;
+    border-radius:50%;
+    border:1px solid var(--brand);
+    background:rgba(5,5,5,0.55);
+    color:var(--brand);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .mission-slide-plus svg{width:16px;height:16px;}
+  .mission-dots{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin:16px 0 4px;
+  }
+  .mission-dot{
+    width:8px;height:8px;
+    padding:0;
+    border-radius:50%;
+    border:1px solid var(--brand);
+    background:transparent;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .mission-dot.active{ background:var(--brand); }
+  .mission-mobile-text{
+    margin:10px 0 0;
+    font-size:14px;
+    line-height:1.6;
+    color:var(--muted-fg);
+  }
+  .mission-mobile-text b{ font-weight:700; color:var(--fg); }
+
+  /* ---------- HOW IT WORKS ---------- */
+  #how-it-works{
+    background:transparent; /* global ambient background shows through, see top of file */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:120px 40px;
+  }
+  .hiw-inner{
+    max-width:1100px;
+    width:100%;
+    text-align:center;
+  }
+  .hiw-inner h2{
+    font-weight:900;
+    font-size:clamp(32px,5vw,72px);
+    text-transform:uppercase;
+    margin:0 0 48px;
+  }
+  .hiw-inner h2 .accent{color:var(--brand);animation:glow-pulse-text 3.3s ease-in-out infinite;}
+  .hiw-steps{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:28px;
+    margin:0 0 56px;
+    text-align:left;
+  }
+  .hiw-step{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  /* Only the "Take the Quiz" step is interactive (opens the quiz bubble) —
+     same hover-lift language as the rest of the site's clickable elements,
+     kept subtle since the other three steps are purely informational. */
+  .hiw-step-link{
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .hiw-step-link:hover{ transform:translateY(-2px); }
+  .hiw-step-link:hover .hiw-step-icon{
+    background:rgba(var(--brand-glow-rgb),0.1);
+    box-shadow:0 0 14px rgba(var(--brand-glow-rgb),0.3);
+  }
+  .hiw-step-icon{
+    width:40px;height:40px;
+    border-radius:50%;
+    border:1.5px solid var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--brand);
+    flex:none;
+  }
+  .hiw-step-icon svg{width:18px;height:18px;}
+  .hiw-step h3{
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    margin:0;
+    color:var(--fg);
+  }
+  .hiw-step-num{
+    color:var(--brand);
+    font-weight:900;
+    margin-right:4px;
+  }
+  /* icon + FREE pill sit on one row above the step title */
+  .hiw-step-iconrow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  /* small "FREE" pill next to the consultation-step icon */
+  .free-tag{
+    display:inline-flex;
+    align-items:center;
+    padding:3px 10px 2px;
+    border-radius:12px;
+    background:var(--brand);
+    color:var(--primary-fg);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    line-height:1.4;
+  }
+  html.theme-her .free-tag{ color:#ffffff; }
+  .hiw-step p{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--muted-fg);
+    margin:0;
+  }
+  .video-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/9;
+    border-radius:25px;
+    overflow:hidden;
+    border:1px solid var(--brand);
+    background:
+      radial-gradient(circle at 30% 30%, rgba(var(--brand-glow-rgb),0.15), transparent 55%),
+      linear-gradient(135deg,#101a1c,#050505 70%);
+    cursor:pointer;
+  }
+  html.theme-her .video-frame{
+    background:
+      radial-gradient(circle at 30% 30%, rgba(var(--brand-glow-rgb),0.15), transparent 55%),
+      linear-gradient(135deg,#ffeafb,var(--bg) 70%);
+  }
+  .video-frame .poster-note{
+    position:absolute;
+    bottom:16px;left:20px;
+    font-size:12px;
+    color:var(--muted-fg);
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    z-index:2;
+    transition:opacity .25s ease;
+  }
+  .hiw-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+    background:#000;
+  }
+  .play-btn{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:96px;height:96px;
+    border-radius:50%;
+    background:rgba(var(--brand-glow-rgb),0.15);
+    border:2px solid var(--brand);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    animation:glow-pulse-shadow 3.1s ease-in-out infinite;
+    transition:transform .2s ease, background .2s ease, opacity .25s ease;
+    z-index:2;
+  }
+  .play-btn:hover{transform:translate(-50%,-50%) scale(1.08);background:rgba(var(--brand-glow-rgb),0.28);}
+  .play-btn:active{transform:translate(-50%,-50%) scale(.97);animation:btn-glow-pop .4s ease-out;}
+  .play-btn svg{width:32px;height:32px;margin-left:5px;color:var(--brand);}
+  /* once playback starts, fade out the poster affordances so the video is
+     unobstructed; native controls (enabled via JS) handle pause/seek from
+     here on. Clicking the frame again (outside the controls bar) re-shows
+     the play button so it can be replayed after it ends. */
+  .video-frame.playing .play-btn,
+  .video-frame.playing .poster-note{
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* ---------- EXPLORE THE MOLECULES ----------
+     Real three.js orbit scene (client-provided build, pepz-orbit-demo.html),
+     adapted to run scoped/absolute inside this scrollable section instead of
+     a fixed fullscreen overlay. Canvas + aura + title + tooltip are all
+     position:absolute within this position:relative section and sized from
+     the section's own bounding box (see JS), not window.innerWidth/Height. */
+  #explore-molecules{
+    /* Frosted-glass surface, same recipe as the floating header: a dark
+       translucent tint + backdrop blur, so the animated Grainient layer
+       glows through from behind (it used to be opaque #050505). The tint
+       stays dark in BOTH themes on purpose — the scene, labels, and cards
+       inside are all hardcoded light-on-dark. */
+    background:rgba(5,7,10,0.55);
+    backdrop-filter:blur(18px) saturate(1.5);
+    -webkit-backdrop-filter:blur(18px) saturate(1.5);
+    position:relative;
+    transition:background .3s ease;
+    overflow:hidden;
+    height:100vh;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:136px 40px 48px;
+  }
+  /* "For Her" goes LIGHT: airy pink glass over the light Grainient, with
+     the 3D scene panel kept dark as a deliberate contrast element (white
+     star dots + glow effects need a dark backdrop to read at all). Title,
+     subtitle, and index cards flip to dark-on-light below. */
+  html.theme-her #explore-molecules{
+    background:rgba(253,242,249,0.55);
+  }
+  html.theme-her #explore-molecules #molTitle .white{ color:#141114; }
+  html.theme-her .mol-scene{
+    background:rgba(12,7,11,0.92);
+    border-color:rgba(var(--brand-glow-rgb),0.4);
+  }
+  html.theme-her .mol-card{
+    background:rgba(255,255,255,0.68);
+    border-color:rgba(var(--brand-glow-rgb),0.4);
+    color:#231a20;
+  }
+  html.theme-her .mol-card-name{ color:#181218; }
+  html.theme-her .mol-card-tag{ color:#a63d80; opacity:.85; }
+  html.theme-her .mol-card-body p{ color:#5c4a55; }
+  /* Two-column layout per the client sketch: rounded scene panel left,
+     molecule index cards right. */
+  #explore-molecules .mol-layout{
+    position:relative;
+    z-index:2;
+    display:flex;
+    gap:20px;
+    flex:1;
+    min-height:0;
+    width:100%;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .mol-scene{
+    position:relative;
+    flex:1;
+    min-width:0;
+    border-radius:25px;
+    overflow:hidden;
+    border:1px solid rgba(var(--brand-glow-rgb),0.28);
+    background:rgba(255,255,255,0.02);
+  }
+  .mol-list{
+    width:min(360px, 30vw);
+    flex:none;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    overflow-y:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+  }
+  .mol-list::-webkit-scrollbar{ display:none; }
+  /* collapsed cards size themselves so exactly 4 fill the column height
+     (matches the sketch) — the remaining molecules scroll within the list */
+  .mol-card{
+    flex:none;
+    min-height:calc((100% - 42px) / 4);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    border-radius:18px;
+    border:1px solid rgba(var(--brand-glow-rgb),0.3);
+    background:rgba(6,14,16,0.72);
+    padding:14px 18px;
+    color:#e6fbff;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  /* .is-hot: synced with the 3D scene — set while this card's molecule is
+     hovered in the scene. :hover included too so cards still light up
+     while the render loop is paused. */
+  .mol-card:hover,
+  .mol-card.is-hot{
+    border-color:var(--brand);
+    box-shadow:0 0 18px rgba(var(--brand-glow-rgb),0.28);
+  }
+  .mol-card-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .mol-card-icon{
+    width:32px;height:32px;
+    flex:none;
+    color:var(--brand);
+    opacity:.9;
+  }
+  .mol-card-names{ flex:1; min-width:0; }
+  .mol-card-name{
+    display:block;
+    font-family:'Syncopate',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:#f2fbfd;
+  }
+  .mol-card-tag{
+    display:block;
+    margin-top:2px;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:#7dd3e0;
+    opacity:.7;
+  }
+  .mol-card-plus{
+    width:34px;height:34px;
+    flex:none;
+    border-radius:50%;
+    border:1px solid var(--brand);
+    background:transparent;
+    color:var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:transform .25s ease, background .2s ease, color .2s ease;
+  }
+  .mol-card-plus:hover{ background:rgba(var(--brand-glow-rgb),0.15); }
+  .mol-card.open .mol-card-plus{ transform:rotate(45deg); }
+  .mol-card-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .35s ease, margin-top .35s ease;
+  }
+  .mol-card.open .mol-card-body{
+    max-height:170px;
+    margin-top:10px;
+  }
+  .mol-card-body p{
+    margin:0 0 8px;
+    font-size:12px;
+    line-height:1.55;
+    color:#b8dde4;
+  }
+  .mol-card-body a{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--brand);
+  }
+  @media (max-width:900px){
+    #explore-molecules{ height:auto; padding:120px 16px 48px; }
+    /* Syncopate runs wide — let the title wrap on phones instead of
+       clipping at the viewport edge */
+    #explore-molecules #molTitle{ white-space:normal; font-size:clamp(22px,7vw,32px); }
+    #explore-molecules .mol-header{ width:100%; text-align:center; }
+    #explore-molecules .mol-layout{ flex-direction:column; }
+    .mol-scene{ flex:none; height:54vh; }
+    /* cards removed on phones — just the 3D scene */
+    .mol-list{ display:none; }
+  }
+  #explore-molecules canvas{
+    display:block;
+    position:absolute;
+    inset:0;
+    z-index:1;
+    /* Default lets a vertical touch-drag pass through as a page scroll —
+       important on phones since this canvas fills the whole section. Only
+       captured for drag-to-orbit while the scene is actually running (see
+       .scene-playing below, toggled by startScene/stopScene in the module
+       script) — while paused/stopped, touching the section should scroll
+       the page like anywhere else, not do nothing. */
+    touch-action:pan-y;
+    width:100%;
+    height:100%;
+  }
+  #explore-molecules.scene-playing canvas{
+    touch-action:none;
+  }
+  #explore-molecules #aura{
+    position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  }
+  #explore-molecules #aura .blob{
+    position:absolute; border-radius:50%;
+    filter: blur(70px);
+    mix-blend-mode: screen;
+    /* Alpha stops cut roughly in half (.85/.4 -> .35/.15) and blob count
+       trimmed from 5 to 2 above, per "remove most of the aura/halo" — keeps
+       a faint ambient glow without the previous heavy wash. */
+    background: radial-gradient(circle at 32% 30%, rgba(150,240,255,.35), rgba(20,140,165,.15) 45%, rgba(5,7,8,0) 72%);
+    animation: aura-drift ease-in-out infinite;
+  }
+  /* "For Her": aura blobs re-tint pink/magenta; the section's own #050505
+     backdrop stays put (background intentionally left dark, see #explore-
+     molecules comment above) — only the glowing accents change. */
+  html.theme-her #explore-molecules #aura .blob{
+    background: radial-gradient(circle at 32% 30%, rgba(255,150,160,.35), rgba(200,60,90,.15) 45%, rgba(5,7,8,0) 72%);
+  }
+  @keyframes aura-drift{
+    0%   { transform: translate(0,0) scale(1); }
+    25%  { transform: translate(5%, -6%) scale(1.08); }
+    50%  { transform: translate(-4%, 5%) scale(0.94); }
+    75%  { transform: translate(-6%, -3%) scale(1.05); }
+    100% { transform: translate(0,0) scale(1); }
+  }
+  /* Title + subtitle used to each be independently absolute-positioned
+     with a hardcoded top offset — #molSub's offset was computed assuming
+     #molTitle always rendered as exactly one line, which broke the
+     moment the title needed to wrap on a narrow screen (its second line
+     would land right on top of the subtitle under it). Grouped into one
+     flow container instead: the group is positioned once, and the
+     subtitle's spacing is just a normal margin-top under the title, so it
+     always sits directly below however many lines the title takes. */
+  #explore-molecules .mol-header{
+    /* static in the section's new flex column (was absolutely centered) —
+       also avoids fighting .reveal-target's translateY */
+    position:relative;
+    z-index:2; pointer-events:none; text-align:center;
+    margin:0 0 28px;
+  }
+  #explore-molecules #molTitle{
+    /* no white-space:nowrap — Syncopate runs wide, so the title must
+       be allowed to wrap on narrow screens (desktop fits on one line) */
+    font-family:'Syncopate',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-weight:900; letter-spacing:.06em; text-transform:uppercase;
+    font-size: clamp(24px, 4.5vw, 56px);
+  }
+  #explore-molecules #molTitle .white{ color:#f2fbfd; }
+  #explore-molecules #molTitle .cyan{
+    color: var(--brand);
+    animation: glow-pulse-text 2.8s ease-in-out infinite;
+  }
+  #explore-molecules #molSub{
+    margin:12px 0 0;
+    color:var(--muted-fg); font-size:15px; letter-spacing:.03em;
+  }
+  /* #explore-molecules is dark in both themes (see comment on the section
+     itself), so icon buttons inside it need to stay white rather than
+     following --fg, which would go black-on-black in "For Her" — same fix
+     as the side-nav above. */
+  #explore-molecules .icon-btn{ color:#ffffff; }
+  #explore-molecules .mol-scene-toggle{
+    position:absolute; top:16px; right:16px; /* inside the .mol-scene panel */
+    z-index:3;
+    background:rgba(5,5,5,0.4);
+    backdrop-filter:blur(6px);
+  }
+  .mol-scene-toggle .icon-play{ display:none; }
+  .mol-scene-toggle.is-playing .icon-pause{ display:block; }
+  .mol-scene-toggle.is-playing .icon-play{ display:none; }
+  .mol-scene-toggle:not(.is-playing) .icon-pause{ display:none; }
+  .mol-scene-toggle:not(.is-playing) .icon-play{ display:block; }
+  #explore-molecules #molTooltip{
+    position:absolute; pointer-events:none; z-index:10;
+    transform: translate(-50%, -140%);
+    background: rgba(6,14,16,0.85);
+    border: 1px solid rgba(var(--brand-glow-rgb),0.45);
+    box-shadow: 0 0 18px rgba(var(--brand-glow-rgb),0.15), inset 0 0 12px rgba(var(--brand-glow-rgb),0.05);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: #e6fbff;
+    font-size: 12px;
+    letter-spacing: .04em;
+    opacity: 0;
+    transition: opacity .15s ease;
+    white-space: nowrap;
+  }
+  #explore-molecules #molTooltip .name{ color: var(--brand); font-weight:700; }
+  #explore-molecules #molTooltip .tag{ color:#7dd3e0; opacity:.7; font-size:10px; text-transform:uppercase; letter-spacing:.1em; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.7);
+    backdrop-filter:blur(4px);
+    z-index:500;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:auto;}
+  .modal-box{
+    width:min(460px,90vw);
+    background:var(--card);
+    border:1px solid var(--brand);
+    border-radius:25px;
+    padding:40px;
+    position:relative;
+    transform:translateY(16px) scale(.97);
+    transition:transform .25s ease;
+  }
+  .modal-overlay.open .modal-box{transform:translateY(0) scale(1);}
+  .modal-close{
+    position:absolute;top:20px;right:20px;
+    width:34px;height:34px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--fg);
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .2s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .modal-close:hover{
+    border-color:var(--brand);
+    transform:translateY(-1px);
+    box-shadow:0 0 14px rgba(var(--brand-glow-rgb),0.3);
+  }
+  .modal-close:active{
+    transform:translateY(0) scale(.97);
+    animation:btn-glow-pop-outline .4s ease-out;
+  }
+  .modal-box h3{
+    font-weight:900;
+    font-size:26px;
+    text-transform:uppercase;
+    /* Reserve clearance on the right so a long left-aligned heading (e.g.
+       "This Is a Prototype") wraps before it reaches under .modal-close,
+       which sits at top:20px;right:20px — matters most on narrow phones
+       where .modal-box shrinks to 90vw and that corner button eats a
+       bigger share of the available text width. */
+    margin:0 40px 8px 0;
+  }
+  .modal-box h3 span{color:var(--brand);}
+  .modal-box p.modal-sub{color:var(--muted-fg);font-size:14px;margin:0 0 28px;}
+  .form-field{margin-bottom:18px;}
+  .form-field label{
+    display:block;
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--muted-fg);
+    margin-bottom:8px;
+  }
+  .form-field input,.form-field select,.form-field textarea{
+    width:100%;
+    background:var(--input);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    color:var(--fg);
+    font-size:14px;
+    font-family:inherit;
+  }
+  .form-field textarea{min-height:110px;resize:vertical;}
+  .form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:1px solid var(--brand);}
+  .modal-submit{
+    width:100%;
+    margin-top:8px;
+  }
+  .success-state{display:none;text-align:center;padding:16px 0 8px;}
+  .success-state.show{display:block;}
+  .success-icon{
+    width:64px;height:64px;
+    border-radius:50%;
+    background:rgba(var(--brand-glow-rgb),0.12);
+    border:1.5px solid var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 20px;
+  }
+  .success-icon svg{width:28px;height:28px;color:var(--brand);}
+  .success-state h4{font-size:20px;font-weight:900;text-transform:uppercase;margin:0 0 8px;}
+  .success-state p{color:var(--muted-fg);font-size:14px;line-height:1.5;margin:0 0 24px;}
+
+  ::selection{background:var(--brand);color:#000;}
+
+  /* ---------- SITE FOOTER + TRUST BAR ----------
+     No footer existed anywhere in this file before. Trust bar sits inside
+     the footer (rather than inside #home) so it doesn't compete with the
+     hero's own tightly-pinned layout (h1/copy centered, .learn-more already
+     absolutely pinned at bottom:56px) — this is the "just above where the
+     footer will live" placement option. */
+  .site-footer{
+    position:relative;
+    padding:48px 24px 36px;
+    text-align:center;
+    min-height:0;
+    height:auto;
+    overflow:visible;
+  }
+  .trust-bar{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:28px;
+    margin:0 0 32px;
+  }
+  .trust-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--muted-fg);
+  }
+  .trust-item svg{width:18px;height:18px;color:var(--brand);flex:none;}
+  .footer-line{
+    max-width:720px;
+    margin:0 auto 10px;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--muted-fg);
+  }
+  .footer-copyright{
+    font-size:11px;
+    color:var(--muted-fg);
+    opacity:.7;
+    margin:0;
+  }
+  /* Performance toggle: lets visitors stop the animated Grainient
+     background themselves (see #grainientCanvas + its render loop near
+     the end of the file) — same reasoning as the Explore the Molecules
+     play/stop control, just for the sitewide background layer. Shown on
+     mobile too now: unlike the old particle canvas, the Grainient layer
+     runs everywhere, so there's always something to toggle. */
+  .perf-toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:0 0 24px;
+  }
+  .perf-toggle-label{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--muted-fg);
+  }
+  /* Same on/off pill-switch shape used nowhere else yet on the site, but
+     built from the same visual language as everything else here: brand-
+     color border/fill, glow-pulse-friendly transitions, rounded-full. */
+  .perf-toggle{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    width:42px;height:24px;
+    flex:none;
+    cursor:pointer;
+  }
+  .perf-toggle input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    margin:0;
+    cursor:pointer;
+  }
+  .perf-toggle-track{
+    position:absolute;
+    inset:0;
+    border-radius:100px;
+    border:1px solid var(--brand);
+    background:transparent;
+    transition:background .2s ease;
+  }
+  .perf-toggle input:checked ~ .perf-toggle-track{
+    background:rgba(var(--brand-glow-rgb),0.35);
+  }
+  .perf-toggle-thumb{
+    position:absolute;
+    top:2px;left:2px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:var(--muted-fg);
+    transition:transform .2s cubic-bezier(.16,.84,.44,1), background .2s ease;
+  }
+  .perf-toggle input:checked ~ .perf-toggle-track .perf-toggle-thumb{
+    transform:translateX(18px);
+    background:var(--brand);
+  }
+  .perf-toggle input:focus-visible ~ .perf-toggle-track{
+    box-shadow:0 0 0 2px rgba(var(--brand-glow-rgb),0.4);
+  }
+
+  /* ---------- OUR PRODUCTS ----------
+     (Homepage shows a hand-picked FEATURED subset + a View All tile; the
+     full grid with filters lives on products.html now.) */
+  .featured-kicker{
+    display:block;
+    font-size:clamp(13px,1.2vw,18px);
+    letter-spacing:.14em;
+    color:var(--brand);
+    margin:0 0 10px;
+  }
+  .viewall-card{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:300px;
+    border-radius:25px;
+    border:1px dashed rgba(var(--brand-glow-rgb),0.5);
+    background:rgba(var(--brand-glow-rgb),0.04);
+    transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .viewall-card:hover{
+    border-color:var(--brand);
+    background:rgba(var(--brand-glow-rgb),0.08);
+    box-shadow:0 0 22px rgba(var(--brand-glow-rgb),0.2);
+  }
+  .viewall-inner{ text-align:center; }
+  .viewall-plus{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:54px;height:54px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    border:1.5px solid var(--brand);
+    color:var(--brand);
+    font-size:22px;
+  }
+  .viewall-text{
+    display:block;
+    font-family:'Syncopate',sans-serif;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--fg);
+    line-height:1.5;
+  }
+  /* Featured section — a normal section in the continuous scroll; the
+     Him/Her switch in the header re-themes the whole site via var(--brand)
+     etc, so this needs no per-gender overrides beyond the few spots below. */
+  #productsView{
+    background:transparent; /* global ambient background shows through */
+    min-height:100vh;
+    padding:150px 40px 100px;
+  }
+
+  .products-inner{max-width:1400px;margin:0 auto;}
+
+  .products-heading-row{margin-bottom:28px;}
+  .products-h1{
+    font-weight:900;
+    font-size:clamp(48px,9vw,96px);
+    text-transform:uppercase;
+    line-height:1;
+    margin:0;
+    color:var(--fg);
+  }
+  .products-h1 span{
+    color:var(--brand);
+    transition:color .3s ease;
+    animation:glow-pulse-text 3.2s ease-in-out infinite;
+  }
+  /* Featured tagline — small line under the FEATURED heading (not a second
+     giant headline). */
+  .products-sub{
+    font-weight:400;
+    font-size:clamp(13px,1.3vw,16px);
+    text-transform:uppercase;
+    color:var(--muted-fg);
+    margin:12px 0 0;
+    letter-spacing:0.14em;
+  }
+
+  /* gender switch — lives in the header next to the account icon now, and
+     drives the ENTIRE site's theme (see the ":root"/"html.theme-her" custom
+     property block near the top of this stylesheet), not just Products. */
+  .gender-switch{
+    display:inline-flex;
+    gap:4px;
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:4px;
+    background:var(--muted-surface);
+  }
+  .gender-switch-btn{
+    border:none;
+    background:transparent;
+    color:var(--muted-fg);
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    padding:8px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .gender-switch-btn:hover{color:var(--fg);}
+  .gender-switch-btn.active{
+    background:var(--brand);
+    color:var(--primary-fg);
+  }
+  html.theme-her .gender-switch-btn.active{color:#ffffff;}
+
+  /* ALL + FILTER BY CATEGORY controls */
+  .products-controls{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  .pill-btn{
+    border-radius:100px;
+    padding:12px 28px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease, color .2s ease;
+  }
+  .pill-solid{
+    border:none;
+    background:var(--brand);
+    color:var(--primary-fg);
+  }
+  .theme-her #productsView .pill-solid{color:#ffffff;}
+  .pill-solid:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(var(--brand-glow-rgb),0.3);}
+  .theme-her #productsView .pill-solid:hover{box-shadow:0 6px 20px rgba(var(--brand-glow-rgb),0.3);}
+  .pill-outline{
+    border:1px solid var(--brand);
+    background:transparent;
+    color:var(--fg);
+  }
+  .pill-outline:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px);}
+  .pill-outline.active{background:var(--brand);color:var(--primary-fg);}
+  .theme-her #productsView .pill-outline.active{color:#ffffff;}
+
+  /* "Compounded in the USA" — stated once here in the controls row (applies
+     to the whole catalog) instead of repeated on every product card. */
+  .usa-note{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:11px 22px;
+    background:var(--destructive,#e7000b);
+    color:#ffffff;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    border-radius:100px;
+    white-space:nowrap;
+  }
+
+  /* filter panel — 4 multi-select category toggles + Apply */
+  .filter-panel{
+    display:none;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:12px;
+    padding:20px;
+    margin:0 0 32px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    background:var(--card);
+  }
+  .filter-panel.open{display:flex;}
+  .filter-chip{
+    border:1px solid var(--brand);
+    background:transparent;
+    color:var(--fg);
+    border-radius:100px;
+    padding:10px 20px;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease;
+  }
+  .filter-chip:hover{background:rgba(255,255,255,0.08);}
+  .filter-chip.selected{background:var(--brand);color:var(--primary-fg);}
+  .theme-her #productsView .filter-chip.selected{color:#ffffff;}
+  .filter-apply-btn{margin-left:auto;}
+
+  /* product grid */
+  .products-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(267px,267px));
+    gap:28px;
+    justify-content:start;
+    /* Cards size to their own content now (see .product-card below) rather
+       than a fixed height, so grid's default row-stretch would otherwise
+       force every card in a row to match the tallest one — align-items:
+       start keeps each card at its own natural height instead. */
+    align-items:start;
+  }
+  /* Card layout: originally every part (name/desc/divider/button) was
+     absolute-positioned at pixel offsets pulled from Figma. That broke the
+     moment real product data didn't match the Figma placeholder text —
+     a 2-line title (e.g. "CJC-1295 / IPAMORELIN") would overflow its fixed
+     slot and visually collide with the description sitting at its own
+     fixed offset right below. Rebuilt as a normal flex column instead: the
+     square photo (with the quick-add "+" and "Coming Soon" badge overlaid
+     on top of it, in .product-media) sits fixed at the top, then name /
+     description / divider / footer stack in-flow in .product-body — each
+     part pushes the next one down by its own real height, so nothing can
+     ever overlap regardless of how long any given title or description
+     is. min-height (not height) keeps cards visually consistent at the
+     old 560px when content is short, while letting a card grow taller
+     instead of clipping/colliding when content runs long. */
+  .product-card{
+    width:267px;
+    min-height:560px;
+    border-radius:25px;
+    border:1px solid var(--brand);
+    background:linear-gradient(180deg, var(--card) 0%, var(--bg) 100%);
+    display:flex;
+    flex-direction:column;
+    /* overflow:hidden so the photo (flush against the card's top corners)
+       can never paint over the card's own rounded border. */
+    overflow:hidden;
+    transition:opacity .35s ease, transform .35s ease, box-shadow .25s ease;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 40px rgba(var(--brand-glow-rgb),0.18);
+  }
+  .theme-her #productsView .product-card:hover{box-shadow:0 14px 40px rgba(var(--brand-glow-rgb),0.18);}
+  .product-card.card-hidden{
+    opacity:0;
+    transform:scale(.94);
+    pointer-events:none;
+    position:absolute;
+    visibility:hidden;
+  }
+  /* Part 1: photo + the "+" quick-add and "Coming Soon" badge overlaid on
+     top of it — the only part of the card where overlap is intentional. */
+  .product-media{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    flex:none;
+  }
+  .product-photo{
+    position:absolute;
+    inset:0;
+    border-radius:25px;
+    background-size:cover;
+    background-position:center;
+    background-color:#0a0a0a;
+  }
+  .product-quick-add{
+    position:absolute;
+    top:8px;right:8px;
+    width:53px;height:53px;
+    border-radius:50%;
+    background:rgba(15,15,15,0.55);
+    border:1px solid var(--brand);
+    color:var(--brand);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .product-quick-add:hover{background:var(--brand);color:var(--primary-fg);transform:scale(1.05);}
+  /* "For Her": light frosted disc instead of the dark one — the dark circle
+     read as a gray blob over the light product photos */
+  html.theme-her .product-quick-add{
+    background:rgba(255,255,255,0.6);
+    border-color:var(--brand);
+  }
+  .theme-her #productsView .product-quick-add:hover{color:#ffffff;background:var(--brand);}
+  .coming-soon-badge{
+    position:absolute;
+    bottom:8px;left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:150px;height:36px;
+    background:var(--brand);
+    color:var(--primary-fg);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    text-transform:uppercase;
+    border-radius:25px;
+  }
+  .theme-her #productsView .coming-soon-badge{color:#ffffff;}
+  /* Parts 2-5: title, description, divider, footer — plain in-flow flex
+     column, so each one's real rendered height (1 or 2 line title, short
+     or long description) pushes the next part down instead of everything
+     sitting at fixed offsets that assume a specific text length. */
+  .product-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:24px 29px 28px;
+  }
+  .product-name{
+    font-weight:700;
+    font-size:21px;
+    text-transform:uppercase;
+    line-height:1.15;
+    margin:0 0 8px;
+    color:var(--fg);
+  }
+  .product-desc{
+    font-size:12px;
+    line-height:1.5;
+    color:var(--fg);
+    margin:0;
+    /* Fills whatever vertical space is left in the card (which has a
+       560px min-height) so the divider + button sit pinned near the
+       bottom when the description is short, same as the original Figma
+       spacing — but simply grows the card taller instead of overlapping
+       anything when a description runs long. */
+    flex:1;
+  }
+  .product-divider{
+    width:100%;height:1px;
+    margin:20px 0 0;
+    background:rgba(255,255,255,0.2);
+    flex:none;
+  }
+  .product-footer{
+    width:100%;
+    margin-top:16px;
+    flex:none;
+  }
+  .product-footer .btn-outline{
+    display:block;
+    width:100%;
+    padding:14px 16px;
+    font-size:12px;
+    text-align:center;
+    border-color:var(--brand);
+  }
+
+  .products-empty{
+    display:none;
+    color:var(--muted-fg);
+    font-size:15px;
+    padding:60px 0;
+    text-align:center;
+  }
+  .products-empty.show{display:block;}
+
+  /* ---------- CONTACT US (Phase D) ----------
+     Rebuilt to match Figma node 32:466 exactly (not a generic contact-page
+     layout): CONTACT US heading + one-line subcopy, then a 2-col grid —
+     Full Name / Email / Subject stacked as 3 big outlined "pill" fields on
+     the left (600px), Message as one tall matching field on the right
+     (718px, 42px gap — same ratio as Figma), then a full-width outlined
+     SUBMIT bar underneath. Field "labels" in the design are oversized bold
+     centered placeholder text (not labels-above-inputs), which is what
+     .contact-input::placeholder recreates below; real typed text renders
+     at a normal readable size. */
+  #contact{
+    background:transparent; /* global ambient background shows through, see top of file */
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding:160px 40px 100px;
+  }
+  .contact-inner{
+    max-width:1400px;
+    width:100%;
+    margin:0 auto;
+  }
+  .contact-heading{
+    font-weight:900;
+    font-size:clamp(48px,7vw,96px);
+    text-transform:uppercase;
+    line-height:1;
+    margin:0 0 16px;
+  }
+  .contact-heading .accent{color:var(--brand);animation:glow-pulse-text 3.4s ease-in-out infinite;}
+  .contact-sub{
+    font-size:clamp(16px,1.6vw,24px);
+    font-weight:400;
+    color:var(--fg);
+    max-width:642px;
+    line-height:1.4;
+    margin:0 0 48px;
+  }
+  .contact-form-grid{
+    display:grid;
+    grid-template-columns:600fr 718fr;
+    gap:21px 42px;
+    margin-bottom:24px;
+  }
+  .contact-form-col{
+    display:flex;
+    flex-direction:column;
+    gap:21px;
+  }
+  .contact-input{
+    width:100%;
+    background:transparent;
+    border:1px solid var(--brand);
+    border-radius:15px;
+    color:var(--fg);
+    font-family:inherit;
+    font-size:16px;
+    padding:0 24px;
+    transition:box-shadow .2s ease;
+  }
+  .contact-form-col .contact-input{
+    height:108px;
+    text-align:center;
+  }
+  .contact-input::placeholder{
+    color:rgba(var(--placeholder-rgb),0.6);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    font-size:clamp(15px,2.6vw,40px);
+  }
+  .contact-input:focus{outline:1px solid var(--brand);box-shadow:0 0 14px rgba(var(--brand-glow-rgb),0.25);}
+  .contact-textarea{
+    height:365px;
+    resize:none;
+    text-align:center;
+    padding:32px 24px;
+    line-height:1.4;
+  }
+  .contact-submit-btn{
+    display:block;
+    width:100%;
+    background:transparent;
+    border:1px solid var(--brand);
+    border-radius:15px;
+    color:var(--fg);
+    font-weight:700;
+    font-size:clamp(18px,3vw,40px);
+    text-transform:uppercase;
+    padding:24px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, background .2s ease, color .2s ease;
+  }
+  .contact-submit-btn:hover{
+    background:rgba(var(--brand-glow-rgb),0.1);
+    transform:translateY(-1px);
+    box-shadow:0 0 24px rgba(var(--brand-glow-rgb),0.25);
+  }
+  .contact-submit-btn:active{
+    transform:translateY(0) scale(.99);
+    background:var(--brand);
+    color:var(--primary-fg);
+    animation:btn-glow-pop-outline .4s ease-out;
+  }
+  html.theme-her .contact-submit-btn:active{color:#ffffff;}
+  #contact .success-state{max-width:642px;}
+
+  @media (max-width:900px){
+    /* Mobile header = Logo / theme switch / hamburger only. */
+    #accountBtn, #bookConsultBtn{ display:none; }
+    .header-actions{ gap:14px; }
+    .header-actions .hamburger-btn{ display:flex; }
+    .mobile-nav-drawer{ display:block; }
+    /* Bump the two icon-buttons visitors are actually likely to tap on
+       mobile up to the ~44px minimum touch target size (Apple HIG / Material
+       guidance) — the base .icon-btn's 38px is fine as a mouse target on
+       desktop but is tight for a thumb. */
+    .hamburger-btn, .mol-scene-toggle{ width:44px; height:44px; }
+    /* Gender switch shrinks so Logo / switch / hamburger all fit comfortably
+       in the mobile header without crowding. */
+    .gender-switch{ gap:2px; padding:3px; border-radius:11px; }
+    .gender-switch-btn{ padding:6px 10px; font-size:9px; border-radius:8px; }
+    /* One Mission on phones: rows + preview panel out, swipe carousel in —
+       and let the section size to content instead of the desktop's 100vh. */
+    #one-mission{
+      height:auto;
+      min-height:100vh;
+      display:block;
+      padding:140px 20px 80px;
+    }
+    .mission-layout{ display:none; }
+    .mission-carousel-wrap{ display:block; }
+    .mission-heading{ margin-bottom:32px; }
+    #productsView{padding:140px 20px 80px;}
+    /* 2 columns, not 1 or 3, per request. Card is the same in-flow flex
+       column as desktop (see the base .product-card rules) — just a
+       smaller min-height and tighter padding/font-sizes to fit the
+       narrower 2-up card width, so the same "nothing can collide"
+       guarantee applies here too. */
+    .products-grid{grid-template-columns:repeat(2, 1fr); gap:14px 12px;}
+    .product-card{
+      width:100%; min-height:300px;
+    }
+    .product-quick-add{
+      width:34px; height:34px; top:6px; right:6px;
+    }
+    .coming-soon-badge{
+      bottom:5px; width:96px; height:26px; font-size:9px;
+    }
+    .product-body{ padding:14px 16px 18px; }
+    .product-name{ font-size:14px; margin:0 0 6px; }
+    .product-desc{ font-size:10px; line-height:1.4; }
+    .product-divider{ margin:14px 0 0; }
+    .product-footer{ margin-top:12px; }
+    .product-footer .btn-outline{ padding:9px 10px; font-size:11px; }
+    .filter-apply-btn{margin-left:0;}
+
+    #contact{padding:120px 20px 60px;}
+    .contact-form-grid{grid-template-columns:1fr;}
+    .contact-textarea{height:200px;}
+    /* Every section heading here uses clamp(floor, Nvw, ceiling) — at
+       typical phone widths (~375-430px) the vw term computes smaller than
+       the floor, so headings render at their floor value site-wide, which
+       read too small. Bumping just the floors (keeping the same vw/ceiling)
+       preserves the existing scaling curve above this breakpoint. */
+    .mission-heading{ font-size:clamp(40px,5.5vw,96px); }
+    .evidence-heading{ font-size:clamp(40px,5vw,72px); }
+    .hiw-inner h2{ font-size:clamp(40px,5vw,72px); }
+    .products-h1{ font-size:clamp(56px,9vw,96px); }
+    .contact-heading{ font-size:clamp(56px,7vw,96px); }
+    /* Explore the Molecules: the scene-toggle button lives inside the
+       .mol-scene panel now (not the section's top-right corner), so the
+       header no longer needs the old max-width clearance — full width,
+       properly centered. */
+    #molTitle{ white-space:normal; }
+    #molSub{ font-size:13px; }
+  }
+</style>
+<!-- three.js (core only, via cdnjs) for the real Explore the Molecules orbit scene -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.184.0/three.module.js"
+  }
+}
+</script>
+<script>try{if(localStorage.getItem('pepz-theme')==='her')document.documentElement.classList.add('theme-her');}catch(e){}</script>
+<link rel="stylesheet" href="assets/shared.css">
+</head>
+<body>
+
+<!-- ================= GLOBAL AMBIENT BACKGROUND =================
+     Fixed, viewport-relative, sit behind every section. Placed first in
+     the document on purpose — see the CSS comment above #siteGradientBg
+     for why that alone (no z-index needed) keeps them behind all content. -->
+<div id="siteGradientBg" aria-hidden="true"></div>
+<canvas id="grainientCanvas" aria-hidden="true"></canvas>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="siteHeader">
+  <a class="logo" href="#home" id="logoHomeLink"><span>PEPZ</span>.</a>
+  <!-- Primary nav — lives in the glass header now (was a fixed side nav).
+       Hidden under 1200px, where the hamburger + drawer take over. -->
+  <nav class="header-nav" id="headerNav" aria-label="Primary">
+    <a href="index.html#home" class="nav-link active">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="science.html" class="nav-link">Science</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="legal.html" class="nav-link">Legal</a>
+  </nav>
+  <div class="header-actions">
+    <!-- Global site theme switch: toggles html.theme-her, which re-themes
+         the ENTIRE page (see the ":root"/"html.theme-her" CSS block) — cyan
+         -> pink, dark -> light. Not just a Products-section filter anymore. -->
+    <div class="gender-switch" role="tablist" aria-label="Shop by">
+      <button class="gender-switch-btn active" id="headerTabHim" data-gender="him" role="tab" aria-selected="true">For Him</button>
+      <button class="gender-switch-btn" id="headerTabHer" data-gender="her" role="tab" aria-selected="false">For Her</button>
+    </div>
+    <button class="icon-btn book-modal-trigger" id="accountBtn" aria-label="Account / Sign in">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="btn-primary book-modal-trigger" id="bookConsultBtn">Book Consultation</button>
+    <!-- Mobile-only: replaces accountBtn + bookConsultBtn (hidden under
+         900px, see media query) with a single hamburger that opens the
+         drawer below — keeps the mobile header down to Logo / theme switch
+         / hamburger as requested. -->
+    <button class="icon-btn hamburger-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ================= MOBILE NAV DRAWER =================
+     Only reachable via the hamburger button above, which only exists in
+     the mobile layout — but also force-hidden past 900px (see CSS) so it
+     can never appear on desktop even if toggled open and then resized. -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+  <div class="mobile-nav-panel">
+    <button class="icon-btn mobile-nav-close" id="mobileNavCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="mobile-nav-links">
+      <a href="index.html#home" class="nav-link">Home</a>
+      <a href="products.html" class="nav-link">Products</a>
+      <a href="science.html" class="nav-link">Science</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="legal.html" class="nav-link">Legal</a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <button class="icon-btn book-modal-trigger" id="mobileAccountBtn" aria-label="Account / Sign in">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Account</span>
+      </button>
+      <button class="btn-primary book-modal-trigger" id="mobileBookBtn">Book Consultation</button>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ================= HOME ================= -->
+  <section id="home">
+    <!-- Full-bleed hero video: him/her file swapped by the header gender
+         switch (see hero video JS). muted+playsinline are required for
+         mobile autoplay; NO loop attribute on purpose — it plays once and
+         the element holds its final frame. -->
+    <video class="hero-video" id="heroVideo" src="assets/hero-him.mp4" muted autoplay playsinline preload="auto" aria-hidden="true"></video>
+    <div class="hero-inner">
+      <h1>Upgrade Your<br><span class="accent">HUMAN ENGINE</span></h1>
+      <p class="hero-copy">Legally prescribed peptides for weight loss, longevity, muscle repair, and cognitive performance. Managed end-to-end by clinical experts.</p>
+      <a class="learn-more" href="#one-mission">
+        Learn more
+        <svg viewBox="0 0 16 22" fill="none"><path d="M8 0v20M2 14l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= ONE MISSION ================= -->
+  <section id="one-mission">
+    <div class="mission-bg" aria-hidden="true"></div>
+    <div class="mission-inner reveal-target">
+
+      <h2 class="mission-heading"><span class="accent">ONE</span> MISSION -<br>4 <span class="accent">GOALS</span></h2>
+
+      <!-- Desktop/tablet: goal rows left (row or "+" click opens the goal's
+           full page), live photo + summary preview right, driven by hover. -->
+      <div class="mission-layout">
+        <div class="mission-rows" id="missionRows">
+          <a class="mission-row is-active" href="goals/muscle-recovery.html" data-goal="muscle-recovery">
+            <h3 class="mission-row-title">Muscle<br>Recovery</h3>
+            <span class="mission-row-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-row" href="goals/longevity.html" data-goal="longevity">
+            <h3 class="mission-row-title">Longevity</h3>
+            <span class="mission-row-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-row" href="goals/beauty.html" data-goal="beauty">
+            <h3 class="mission-row-title">Beauty</h3>
+            <span class="mission-row-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-row" href="goals/fitness.html" data-goal="fitness">
+            <h3 class="mission-row-title">Fitness</h3>
+            <span class="mission-row-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+        </div>
+        <div class="mission-detail">
+          <div class="mission-detail-photo" id="missionDetailPhoto" data-goal-photo="muscle-recovery" role="img" aria-label="Muscle Recovery"></div>
+          <p class="mission-detail-text" id="missionDetailText"><!-- filled by JS --></p>
+        </div>
+      </div>
+
+      <!-- Phones: swipeable snap carousel + dots + summary (see JS) -->
+      <div class="mission-carousel-wrap">
+        <div class="mission-carousel" id="missionCarousel">
+          <a class="mission-slide" href="goals/muscle-recovery.html" data-goal="muscle-recovery">
+            <div class="mission-slide-photo" data-goal-photo="muscle-recovery"></div>
+            <span class="mission-slide-pill">Muscle Recovery</span>
+            <span class="mission-slide-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-slide" href="goals/longevity.html" data-goal="longevity">
+            <div class="mission-slide-photo" data-goal-photo="longevity"></div>
+            <span class="mission-slide-pill">Longevity</span>
+            <span class="mission-slide-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-slide" href="goals/beauty.html" data-goal="beauty">
+            <div class="mission-slide-photo" data-goal-photo="beauty"></div>
+            <span class="mission-slide-pill">Beauty</span>
+            <span class="mission-slide-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+          <a class="mission-slide" href="goals/fitness.html" data-goal="fitness">
+            <div class="mission-slide-photo" data-goal-photo="fitness"></div>
+            <span class="mission-slide-pill">Fitness</span>
+            <span class="mission-slide-plus" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </a>
+        </div>
+        <div class="mission-dots" id="missionDots" aria-label="Goals"></div>
+        <p class="mission-mobile-text" id="missionMobileText"><!-- filled by JS --></p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= EXPLORE THE MOLECULES ================= -->
+  <!-- Real three.js orbit-field scene (client's own build, pepz-orbit-demo.html),
+       adapted to live inside this normal scrollable section: canvas/aura/title/
+       tooltip are absolutely positioned within this section rather than fixed
+       to the viewport, sized from the section's bounding box, and the render
+       loop is gated by an IntersectionObserver (see script below) so it only
+       runs while the section is actually visible. Moved up to sit directly
+       after One Mission, per client request (nav order matches). -->
+  <section id="explore-molecules">
+    <!-- Trimmed to 2 faint blobs (was 5) — see #aura .blob below for the
+         reduced-opacity/reduced-blur rework ("remove most of the aura/halo"). -->
+    <div id="aura" aria-hidden="true">
+      <div class="blob" style="width:30vw; height:30vw; top:10%; left:8%; animation-duration:32s;"></div>
+      <div class="blob" style="width:24vw; height:24vw; top:56%; left:62%; animation-duration:26s; animation-delay:-6s;"></div>
+    </div>
+    <div class="mol-header reveal-target">
+      <div id="molTitle"><span class="white">EXPLORE THE </span><span class="cyan">MOLECULES</span></div>
+      <p id="molSub">Click a molecule to open its product page &mdash; drag to orbit, pinch to zoom on touch.</p>
+    </div>
+    <!-- Two-column layout (per client sketch): rounded 3D scene panel on
+         the left, scrollable molecule index cards on the right. Cards are
+         generated by the module script from the same PEPTIDES data that
+         builds the 3D nodes, so list and scene stay in sync (hovering a
+         card highlights its molecule and vice versa). -->
+    <div class="mol-layout">
+      <div class="mol-scene" id="molScene">
+        <div id="molTooltip"><div class="name"></div><div class="tag"></div></div>
+        <!-- Scene auto-plays on scroll-into-view like before, but this lets
+             visitors kill the render loop themselves if the site feels slow —
+             the loop is real GPU/CPU + RAM cost while it runs. See the
+             startScene/stopScene wiring in the module script below. -->
+        <button type="button" class="icon-btn mol-scene-toggle is-playing" id="molSceneToggle" aria-label="Stop molecule animation">
+          <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7L8 5z"/></svg>
+        </button>
+        <!-- <canvas> is created and appended by the three.js module script below -->
+      </div>
+      <aside class="mol-list" id="molList" aria-label="Molecule index"><!-- cards injected by the module script --></aside>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section id="how-it-works">
+    <div class="hiw-inner reveal-target">
+      <h2>HOW IT <span class="accent">WORKS</span></h2>
+      <div class="hiw-steps">
+        <a class="hiw-step hiw-step-link" href="#" data-open-quiz role="button">
+          <span class="hiw-step-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 3.5h6M9 3.5v3.2L4.8 14a1.6 1.6 0 0 0 1.4 2.4h11.6a1.6 1.6 0 0 0 1.4-2.4L15 6.7V3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.5 12l2 2 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3><span class="hiw-step-num">01.</span> TAKE THE QUIZ</h3>
+          <p>Answer a few quick questions so we can point you toward the right routine before you talk to anyone.</p>
+        </a>
+        <div class="hiw-step">
+          <span class="hiw-step-iconrow"><span class="hiw-step-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="free-tag">Free</span></span>
+          <h3><span class="hiw-step-num">02.</span> TALK TO A PROVIDER</h3>
+          <p>Book a virtual visit with a licensed physician who reviews your health history and goals.</p>
+        </div>
+        <div class="hiw-step">
+          <span class="hiw-step-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M9 4V3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5V4" stroke="currentColor" stroke-width="1.6"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3><span class="hiw-step-num">03.</span> GET YOUR PROTOCOL</h3>
+          <p>Your provider builds a personalized peptide protocol based on what your body actually needs.</p>
+        </div>
+        <div class="hiw-step">
+          <span class="hiw-step-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 8l9-5 9 5-9 5-9-5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 8v8l9 5 9-5V8M12 13v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          <h3><span class="hiw-step-num">04.</span> START AT HOME</h3>
+          <p>Your peptides ship straight to your door, with clear instructions for self-administration.</p>
+        </div>
+      </div>
+      <div class="video-frame" id="videoFrame">
+        <!-- real explainer video, kept alongside this HTML file in the repo -->
+        <video class="hiw-video" id="hiwVideo" src="assets/how-it-works.mp4" preload="metadata" playsinline></video>
+        <button class="play-btn" id="playBtn" aria-label="Play explainer video">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+        </button>
+        <span class="poster-note">Explainer video</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURED PRODUCTS =================
+       Hand-picked subset — the full catalog + filters moved to products.html. -->
+  <section id="productsView">
+    <div class="products-inner reveal-target">
+
+      <div class="products-heading-row">
+        <h1 class="products-h1"><span class="featured-kicker">FOR <span id="genderAccentWord">HIM</span></span>FEATURED</h1>
+        <p class="products-sub">Where most routines start.</p>
+      </div>
+
+      <div class="products-grid" id="productsGrid"><!-- populated by JS --></div>
+
+    </div>
+  </section>
+
+  <!-- ================= CONTACT US (Phase D) ================= -->
+  <section id="contact">
+    <div class="contact-inner reveal-target">
+
+      <h2 class="contact-heading"><span class="accent">Contact</span> Us</h2>
+      <p class="contact-sub">Didn't find what you're looking for? Don't worry! We would gladly help you through one of our channels.</p>
+
+      <div id="contactFormState">
+        <form id="contactForm">
+          <div class="contact-form-grid">
+            <div class="contact-form-col">
+              <input type="text" id="contactName" class="contact-input" placeholder="FULL NAME" required>
+              <input type="email" id="contactEmail" class="contact-input" placeholder="EMAIL ADDRESS" required>
+              <input type="text" id="contactReason" class="contact-input" placeholder="SUBJECT" required>
+            </div>
+            <textarea id="contactMessage" class="contact-input contact-textarea" placeholder="MESSAGE" required></textarea>
+          </div>
+          <button type="submit" class="contact-submit-btn">Submit</button>
+        </form>
+      </div>
+
+      <div class="success-state" id="contactSuccessState">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Message Sent</h4>
+        <p>Thanks for reaching out — a member of the PEPZ team will get back to you within one business day.</p>
+        <button class="btn-outline" id="contactSuccessCloseBtn">Send Another Message</button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER (pepz.com structure) ================= -->
+<footer class="pepz-footer site-footer">
+  <div class="perf-toggle-row">
+    <span class="perf-toggle-label">Animated background</span>
+    <label class="perf-toggle">
+      <input type="checkbox" id="particlesToggle" checked aria-label="Toggle animated gradient background">
+      <span class="perf-toggle-track"><span class="perf-toggle-thumb"></span></span>
+    </label>
+  </div>
+  <div class="pepz-footer-grid">
+    <div class="pepz-footer-brand">
+      <a class="logo" href="index.html#home"><span>PEPZ</span>.</a>
+      <p class="pepz-footer-tagline">&ldquo;Optimizing the human engine for the 21st century.&rdquo;</p>
+      <p class="pepz-footer-note">PEPZ is a technology platform, not a pharmacy. We connect patients with licensed physicians and accredited compounding pharmacies.</p>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Shop</h5>
+      <ul>
+        <li><a href="products.html">Fitness</a></li>
+        <li><a href="products.html">Longevity</a></li>
+        <li><a href="products.html">Beauty</a></li>
+        <li><a href="products.html">Recovery</a></li>
+      </ul>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Legal</h5>
+      <ul>
+        <li><a href="legal.html#prescription-policy">Prescription Policy</a></li>
+        <li><a href="legal.html#lab-reports">Lab Reports</a></li>
+        <li><a href="legal.html#privacy">Privacy</a></li>
+        <li><a href="legal.html#terms">Terms</a></li>
+      </ul>
+    </div>
+    <div class="pepz-footer-col">
+      <h5>Connect</h5>
+      <ul>
+        <li><a href="#" rel="noopener">Instagram</a></li>
+        <li><a href="#" rel="noopener">Facebook</a></li>
+        <li><a href="#" rel="noopener">YouTube</a></li>
+        <li><a href="index.html#contact">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pepz-footer-trust">
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.9-6 8.2-3.4-1.3-6-4.2-6-8.2V4.7l6-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Rx-Verified Marketplace</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>HIPAA Compliant Infrastructure</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M8 3h4M8.5 3v4.2L4.8 14a1.6 1.6 0 0 0 1.4 2.4h7.6a1.6 1.6 0 0 0 1.4-2.4L11.5 7.2V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Third-Party Lab Tested &middot; COA Available</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.5v7M6.5 10h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>18+ Only &middot; Prescription Required</span>
+  </div>
+  <p class="pepz-footer-bottom">&copy; 2026 PEPZ BIO-TECH. ALL RIGHTS RESERVED. &middot; <a href="mailto:support@pepz.com">support@pepz.com</a></p>
+</footer>
+
+<!-- ================= BOOK CONSULTATION MODAL ================= -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+
+    <div id="formState">
+      <h3><span>Book</span> Consultation</h3>
+      <p class="modal-sub">Tell us a little about yourself and a clinician will follow up.</p>
+      <form id="consultForm">
+        <div class="form-field">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" required placeholder="Jordan Smith">
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="you@example.com">
+        </div>
+        <div class="form-field">
+          <label for="goal">Primary Goal</label>
+          <select id="goal">
+            <option>Muscle Recovery</option>
+            <option>Longevity</option>
+            <option>Beauty</option>
+            <option>Fitness</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary modal-submit">Request Consultation</button>
+      </form>
+    </div>
+
+    <div class="success-state" id="successState">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h4>Request Received</h4>
+      <p>Thanks — a PEPZ clinical advisor will reach out within one business day to schedule your consultation.</p>
+      <button class="btn-outline" id="successCloseBtn">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Active link highlighting via IntersectionObserver — targets every
+     .nav-link[data-target] (header nav + mobile drawer). The old side-nav
+     hover-tuck machinery is gone; the nav lives in the glass header now. */
+  var navLinks = document.querySelectorAll('.nav-link[data-target]');
+  var sections = ['home','one-mission','how-it-works','explore-molecules','productsView','contact']
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  // Sections that stay dark in BOTH themes — while one is active, the
+  // header gets .on-dark so its text/icons pin white in "For Her" (see CSS).
+  var HEADER_DARK_SECTIONS = ['home'];
+  var headerEl = document.getElementById('siteHeader');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        var id = entry.target.id;
+        navLinks.forEach(function(link){
+          link.classList.toggle('active', link.dataset.target === id);
+        });
+        if (headerEl) headerEl.classList.toggle('on-dark', HEADER_DARK_SECTIONS.indexOf(id) !== -1);
+      }
+    });
+  }, {threshold:0.5});
+  sections.forEach(function(s){ observer.observe(s); });
+
+  /* ---------------- One Mission: hover-driven preview + mobile carousel ----------------
+     Rows are plain links to their goal pages (goals/<goal>.html) — hovering
+     one swaps the photo + summary in the preview panel. On phones the
+     panel/rows are replaced by a swipeable snap carousel (dots + summary
+     text follow the visible slide). */
+  var MISSION_GOALS = [
+    { goal:'muscle-recovery', name:'Muscle Recovery', text:'Peptide-based recovery protocols accelerate the body\'s own repair signaling rather than masking pain. <b>BPC-157 and TB-500</b> speed tissue regeneration after strains, tears, or surgery while calming inflammation. Rehab that used to take months can compress into weeks.' },
+    { goal:'longevity', name:'Longevity', text:'Longevity-focused peptides target the cellular machinery that determines how well the body keeps repairing itself. <b>NAD+ and Epitalon</b> restore mitochondrial energy production and support the deep sleep where most regeneration happens.' },
+    { goal:'beauty', name:'Beauty', text:'Beauty-focused peptides replace signals the skin naturally stops producing with age, rather than masking the surface effects. <b>GHK-Cu</b> rebuilds the dermal matrix from below, restoring thickness and elasticity while supporting denser hair growth.' },
+    { goal:'fitness', name:'Fitness', text:'Fitness-focused peptides amplify signals the body already uses to build and maintain lean tissue. <b>CJC-1295 and Ipamorelin</b> nudge natural GH release overnight, supporting lean muscle and faster recovery between sessions.' }
+  ];
+  var missionByGoal = {};
+  MISSION_GOALS.forEach(function(g){ missionByGoal[g.goal] = g; });
+
+  var missionRowEls = Array.prototype.slice.call(document.querySelectorAll('.mission-row'));
+  var missionPhoto = document.getElementById('missionDetailPhoto');
+  var missionText = document.getElementById('missionDetailText');
+  var missionFadeTimer = null;
+
+  function setMissionGoal(goal){
+    var g = missionByGoal[goal];
+    if (!g || !missionPhoto || !missionText) return;
+    if (missionPhoto.getAttribute('data-goal-photo') === goal) return;
+    missionRowEls.forEach(function(r){ r.classList.toggle('is-active', r.dataset.goal === goal); });
+    missionPhoto.classList.add('is-fading');
+    clearTimeout(missionFadeTimer);
+    missionFadeTimer = setTimeout(function(){
+      missionPhoto.setAttribute('data-goal-photo', goal);
+      missionPhoto.setAttribute('aria-label', g.name);
+      missionText.innerHTML = g.text;
+      missionPhoto.classList.remove('is-fading');
+    }, 170);
+  }
+  missionRowEls.forEach(function(row){
+    row.addEventListener('mouseenter', function(){ setMissionGoal(row.dataset.goal); });
+    row.addEventListener('focus', function(){ setMissionGoal(row.dataset.goal); });
+  });
+  if (missionText && missionByGoal['muscle-recovery']) missionText.innerHTML = missionByGoal['muscle-recovery'].text;
+
+  var missionCarousel = document.getElementById('missionCarousel');
+  var missionDotsWrap = document.getElementById('missionDots');
+  var missionMobileText = document.getElementById('missionMobileText');
+  if (missionCarousel && missionDotsWrap && missionMobileText){
+    var missionSlides = Array.prototype.slice.call(missionCarousel.querySelectorAll('.mission-slide'));
+    var missionDots = missionSlides.map(function(slide, i){
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'mission-dot' + (i === 0 ? ' active' : '');
+      var g = missionByGoal[slide.dataset.goal];
+      d.setAttribute('aria-label', 'Show ' + (g ? g.name : 'goal ' + (i + 1)));
+      d.addEventListener('click', function(){
+        missionCarousel.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+      });
+      missionDotsWrap.appendChild(d);
+      return d;
+    });
+    var missionCurrent = 0;
+    var missionCarTick = false;
+    function syncMissionCarousel(){
+      missionCarTick = false;
+      var i = Math.round(missionCarousel.scrollLeft / Math.max(1, missionCarousel.clientWidth));
+      i = Math.max(0, Math.min(missionSlides.length - 1, i));
+      if (i === missionCurrent) return;
+      missionCurrent = i;
+      missionDots.forEach(function(d, di){ d.classList.toggle('active', di === i); });
+      var g = missionByGoal[missionSlides[i].dataset.goal];
+      if (g) missionMobileText.innerHTML = g.text;
+    }
+    missionCarousel.addEventListener('scroll', function(){
+      if (!missionCarTick){ missionCarTick = true; requestAnimationFrame(syncMissionCarousel); }
+    }, {passive:true});
+    var g0 = missionByGoal[missionSlides[0] && missionSlides[0].dataset.goal];
+    if (g0) missionMobileText.innerHTML = g0.text;
+  }
+
+  /* ---------------- How It Works: real video playback ---------------- */
+  var playBtn = document.getElementById('playBtn');
+  var hiwVideo = document.getElementById('hiwVideo');
+  var videoFrame = document.getElementById('videoFrame');
+
+  playBtn.addEventListener('click', function(){
+    playBtn.style.transform = 'translate(-50%,-50%) scale(0.9)';
+    setTimeout(function(){
+      playBtn.style.transform = 'translate(-50%,-50%) scale(1)';
+    }, 150);
+    videoFrame.classList.add('playing');
+    hiwVideo.controls = true;
+    hiwVideo.play();
+  });
+
+  // Clicking the frame itself (not the controls bar, which is native chrome
+  // the browser intercepts) while paused re-shows the play affordance.
+  hiwVideo.addEventListener('pause', function(){
+    if (hiwVideo.currentTime === 0 || hiwVideo.ended) {
+      videoFrame.classList.remove('playing');
+    }
+  });
+  hiwVideo.addEventListener('ended', function(){
+    videoFrame.classList.remove('playing');
+    hiwVideo.controls = false;
+    hiwVideo.currentTime = 0;
+  });
+
+  /* ---------------- Explore the Molecules: see the three.js module script
+     block at the end of the document (type="module") for the full orbit
+     scene — it is scoped to #explore-molecules and IntersectionObserver-gated. ---------------- */
+
+  /* ---------------- Book Consultation modal ---------------- */
+  var bookModal = document.getElementById('bookModal');
+  // .book-modal-trigger covers the desktop header's account/book buttons
+  // AND their mobile-drawer duplicates (mobileAccountBtn/mobileBookBtn) —
+  // one shared class instead of a hand-maintained id list.
+  var openTriggers = Array.prototype.slice.call(document.querySelectorAll('.book-modal-trigger'));
+  var modalCloseBtn = document.getElementById('modalCloseBtn');
+  var successCloseBtn = document.getElementById('successCloseBtn');
+  var consultForm = document.getElementById('consultForm');
+  var formState = document.getElementById('formState');
+  var successState = document.getElementById('successState');
+
+  function openModal(){
+    bookModal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    bookModal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      formState.style.display = '';
+      successState.classList.remove('show');
+      consultForm.reset();
+    }, 250);
+  }
+
+  openTriggers.forEach(function(btn){
+    if (btn) btn.addEventListener('click', openModal);
+  });
+  modalCloseBtn.addEventListener('click', closeModal);
+  successCloseBtn.addEventListener('click', closeModal);
+  bookModal.addEventListener('click', function(e){
+    if (e.target === bookModal) closeModal();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && bookModal.classList.contains('open')) closeModal();
+  });
+
+  /* ---------------- Mobile nav drawer ---------------- */
+  var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  var mobileNavDrawer = document.getElementById('mobileNavDrawer');
+  var mobileNavCloseBtn = document.getElementById('mobileNavCloseBtn');
+
+  function openMobileDrawer(){
+    mobileNavDrawer.classList.add('open');
+    mobileNavDrawer.setAttribute('aria-hidden', 'false');
+    mobileMenuBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMobileDrawer(){
+    mobileNavDrawer.classList.remove('open');
+    mobileNavDrawer.setAttribute('aria-hidden', 'true');
+    mobileMenuBtn.setAttribute('aria-expanded', 'false');
+    // Don't clear the scroll lock if the book modal is (about to be, or
+    // already) open on top of it — e.g. tapping "Book Consultation" inside
+    // the drawer fires both openModal() and this closer on the same click,
+    // and openModal() runs first, so bail here rather than undoing its lock.
+    if (!bookModal.classList.contains('open')) document.body.style.overflow = '';
+  }
+
+  if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileDrawer);
+  if (mobileNavCloseBtn) mobileNavCloseBtn.addEventListener('click', closeMobileDrawer);
+  mobileNavDrawer.addEventListener('click', function(e){
+    if (e.target === mobileNavDrawer) closeMobileDrawer();
+  });
+  // Tapping a section link, or Book Consultation/Account (which open the
+  // modal on top), should tuck the drawer away rather than leaving it open
+  // behind whatever happens next.
+  mobileNavDrawer.querySelectorAll('.nav-link, .book-modal-trigger').forEach(function(el){
+    el.addEventListener('click', closeMobileDrawer);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && mobileNavDrawer.classList.contains('open')) closeMobileDrawer();
+  });
+
+  
+
+  consultForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    formState.style.display = 'none';
+    successState.classList.add('show');
+  });
+
+  /* ---------------- Contact Us (Phase D): fake-success form, same pattern
+     as the Book Consultation modal above, just inline in the page instead
+     of inside a modal overlay. ---------------- */
+  var contactForm = document.getElementById('contactForm');
+  var contactFormState = document.getElementById('contactFormState');
+  var contactSuccessState = document.getElementById('contactSuccessState');
+  var contactSuccessCloseBtn = document.getElementById('contactSuccessCloseBtn');
+
+  contactForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    contactFormState.style.display = 'none';
+    contactSuccessState.classList.add('show');
+  });
+
+  contactSuccessCloseBtn.addEventListener('click', function(){
+    contactFormState.style.display = '';
+    contactSuccessState.classList.remove('show');
+    contactForm.reset();
+  });
+
+})();
+</script>
+
+<!-- ================= PRODUCTS (Phase B): catalog + hash-router + filtering ================= -->
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Product catalog ----------------
+     Real Figma data (3 for him, 2 for her) plus a small set of extended
+     cards so all 4 categories (Muscle Recovery, Longevity, Beauty, Fitness)
+     have at least one product per gender tab, per client request ("not all
+     products are in the Figma design, be ready to add more"). Extended
+     entries carry extended:true (rendered as data-extended="true") purely
+     for traceability — they are NOT visually distinguished on screen. */
+  /* Full real pepz.com catalog, sourced from the client's own extracted
+     product photos (local files, no expiry). FOR HER is intentionally
+     limited to just the cream for now, per the client. */
+  var PRODUCT_CATALOG = [
+    // ---- FOR HIM (all real pepz.com products) ----
+    {
+      gender:'him', name:'BPC-157', slug:'bpc-157', category:'Muscle Recovery',
+      desc:'Core repair peptide for soft-tissue and muscle recovery, heavily used in athletic contexts.',
+      img:'assets/bpc-157-1-DvsU9HZn.png.png'
+    },
+    {
+      gender:'him', name:'TB-500', slug:'tb-500', category:'Muscle Recovery',
+      desc:'Angiogenesis-driving repair peptide paired with BPC-157 to speed healing in tendons, ligaments, and gut lining.',
+      img:'assets/tb-500-1-tvvZj_AE.png.png'
+    },
+    {
+      gender:'him', name:'Sermorelin', slug:'sermorelin', category:'Longevity',
+      desc:'GHRH analog that restores natural growth-hormone output — anti-aging benefits with support for lean muscle mass.',
+      img:'assets/sermorelin-1-C2d9qNKH.png.png'
+    },
+    {
+      gender:'him', name:'NAD+', slug:'nad-plus', category:'Longevity',
+      desc:'Restores mitochondrial energy production and supports circadian rhythm for deeper, more restorative sleep.',
+      img:'assets/nad-plus-1-BKLocQST.png.png'
+    },
+    {
+      gender:'him', name:'PT-141', slug:'pt-141', category:'Longevity',
+      desc:'Melanocortin peptide used to support sexual wellness and vitality.',
+      img:'assets/pt-141-1-D8L9njBl.png.png'
+    },
+    {
+      gender:'him', name:'CJC-1295 / Ipamorelin', slug:'cjc-1295-ipamorelin', category:'Fitness',
+      desc:'GH secretagogue combo widely used for lean mass, with secondary anti-aging and sleep benefits.',
+      img:'assets/cjc-1295-ipamorelin-1-JuJ36UDM.png.png'
+    },
+    {
+      gender:'him', name:'Tesamorelin', slug:'tesamorelin', category:'Fitness',
+      desc:'GHRH analog that supports lean muscle mass and metabolic health alongside natural growth-hormone pulses.',
+      img:'assets/tesamorelin-1-CRfOSXuX.png.png'
+    },
+    {
+      gender:'him', name:'MOTS-C', slug:'mots-c', category:'Fitness',
+      desc:'Mitochondrial-derived peptide that boosts exercise capacity and metabolic efficiency at the cellular level.',
+      img:'assets/mots-c-1-BcuMa1MT.png.png'
+    },
+    {
+      gender:'him', name:'GHK-Cu', slug:'ghk-cu', category:'Beauty',
+      desc:'Systemic copper peptide with broad anti-aging action plus skin, hair, and tissue-repair support.',
+      img:'assets/ghk-cu-1-vI4S7jS2.png.png'
+    },
+
+    // ---- FOR HER — only the cream for now, per the client ----
+    {
+      gender:'her', name:'GHK-Cu Cream', slug:'ghk-cu-cream', category:'Beauty',
+      desc:'Topical copper peptide for skin and hair, with anti-aging and anti-inflammatory support.',
+      // Pink-packaged "For Her" cream photo (client-provided), distinct from
+      // the blue-packaged ghk-cu-1 photo used in the "For Him" listing.
+      img:'assets/ghkcucreamwomen.png'
+    }
+  ];
+
+  function productCardHTML(p){
+    return (
+      '<article class="product-card" data-gender="' + p.gender + '" data-category="' + p.category + '"' +
+        (p.extended ? ' data-extended="true"' : '') + '>' +
+        '<div class="product-media">' +
+          '<div class="product-photo" style="background-image:url(\'' + p.img + '\')"></div>' +
+          '<button class="product-quick-add" aria-label="Quick add ' + p.name + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+          '</button>' +
+          '<span class="coming-soon-badge">Coming Soon</span>' +
+        '</div>' +
+        '<div class="product-body">' +
+          '<h3 class="product-name">' + p.name + '</h3>' +
+          '<p class="product-desc">' + p.desc + '</p>' +
+          '<div class="product-divider"></div>' +
+          '<div class="product-footer">' +
+            '<a class="btn-outline" href="products/' + p.slug + '.html">Learn More</a>' +
+          '</div>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  /* ---------------- FEATURED (homepage) ----------------
+     Hand-picked subset per gender + a View All tile; the full catalog with
+     category filters lives on products.html. */
+  var FEATURED = { him:['bpc-157','sermorelin','cjc-1295-ipamorelin'], her:['ghk-cu-cream'] };
+  var productsGrid = document.getElementById('productsGrid');
+  var tabHim = document.getElementById('headerTabHim');
+  var tabHer = document.getElementById('headerTabHer');
+  var genderAccentWord = document.getElementById('genderAccentWord');
+  var currentGender = 'him';
+
+  function renderFeatured(){
+    var slugs = FEATURED[currentGender];
+    var html = PRODUCT_CATALOG
+      .filter(function(p){ return p.gender === currentGender && slugs.indexOf(p.slug) !== -1; })
+      .map(productCardHTML).join('');
+    html += '<a class="viewall-card" href="products.html" aria-label="View all products">' +
+      '<span class="viewall-inner">' +
+        '<span class="viewall-plus">&rarr;</span>' +
+        '<span class="viewall-text">View All<br>Products</span>' +
+      '</span></a>';
+    productsGrid.innerHTML = html;
+  }
+
+  function setGender(gender){
+    currentGender = gender;
+    var isHer = gender === 'her';
+    document.documentElement.classList.toggle('theme-her', isHer);
+    // persist so every page (products, science, about, legal, PDPs) matches
+    try { localStorage.setItem('pepz-theme', gender); } catch(e){}
+    tabHim.classList.toggle('active', !isHer);
+    tabHim.setAttribute('aria-selected', String(!isHer));
+    tabHer.classList.toggle('active', isHer);
+    tabHer.setAttribute('aria-selected', String(isHer));
+    if (genderAccentWord) genderAccentWord.textContent = isHer ? 'HER' : 'HIM';
+    if (typeof window.__pepzApplyMoleculeTheme === 'function') window.__pepzApplyMoleculeTheme(isHer);
+    if (typeof window.__pepzApplyBgParticleTheme === 'function') window.__pepzApplyBgParticleTheme(isHer);
+    if (typeof window.__pepzSetHeroVideo === 'function') window.__pepzSetHeroVideo(isHer);
+    renderFeatured();
+  }
+
+  tabHim.addEventListener('click', function(){ setGender('him'); });
+  tabHer.addEventListener('click', function(){ setGender('her'); });
+
+  var storedGender = 'him';
+  try { storedGender = localStorage.getItem('pepz-theme') === 'her' ? 'her' : 'him'; } catch(e){}
+  setGender(storedGender);
+
+})();
+</script>
+
+<!-- ================= HERO VIDEO + SCROLL REVEAL + MISSION PARALLAX ================= -->
+<script>
+(function(){
+  'use strict';
+
+  var reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- Hero video (him/her) ----------------
+     Plays once (no loop), holds its last frame, and only then reveals the
+     Learn More + down-arrow CTA. If playback can't start (autoplay blocked,
+     decode error, reduced-motion) the CTA shows immediately instead of
+     being held hostage. */
+  var heroVideo = document.getElementById('heroVideo');
+  var learnMore = document.querySelector('#home .learn-more');
+  var heroInner = document.querySelector('#home .hero-inner');
+  var HERO_SRC = { him: 'assets/hero-him.mp4', her: 'assets/hero-her.mp4' };
+
+  function showHeroCta(){
+    if (heroInner) heroInner.classList.add('show');
+    if (learnMore) learnMore.classList.add('show');
+  }
+  function hideHeroCta(){
+    if (heroInner) heroInner.classList.remove('show');
+    if (learnMore) learnMore.classList.remove('show');
+  }
+
+  if (heroVideo && learnMore) {
+    heroVideo.addEventListener('ended', showHeroCta);
+    heroVideo.addEventListener('error', showHeroCta);
+
+    if (reduceMotion) {
+      // no motion: leave the first frame as a still and show the CTA now
+      heroVideo.autoplay = false;
+      try { heroVideo.pause(); } catch (e) {}
+      showHeroCta();
+    } else {
+      var p = heroVideo.play();
+      if (p && typeof p.catch === 'function') p.catch(showHeroCta);
+    }
+
+    window.__pepzSetHeroVideo = function(isHer){
+      var next = isHer ? HERO_SRC.her : HERO_SRC.him;
+      if (heroVideo.getAttribute('src') === next) return;
+      heroVideo.setAttribute('src', next);
+      heroVideo.load();
+      if (reduceMotion) { showHeroCta(); return; }
+      hideHeroCta();
+      var pp = heroVideo.play();
+      if (pp && typeof pp.catch === 'function') pp.catch(showHeroCta);
+    };
+  } else if (learnMore) {
+    showHeroCta();
+  }
+
+  /* ---------------- Scroll reveal ----------------
+     One-shot: reveal each .reveal-target the first time ~15% of it enters
+     the viewport, then unobserve (no repeated work while scrolling). */
+  var revealEls = Array.prototype.slice.call(document.querySelectorAll('.reveal-target'));
+  if (!('IntersectionObserver' in window) || reduceMotion) {
+    revealEls.forEach(function(el){ el.classList.add('revealed'); });
+  } else {
+    var revealIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+    revealEls.forEach(function(el){ revealIO.observe(el); });
+  }
+
+  /* ---------------- Hero parallax ----------------
+     The hero video drifts DOWN slower than the page scrolls (classic depth
+     parallax), so the hero has motion of its own as the next section scrolls
+     in normally beneath it. The video keeps its scale(1.12) overscan (see
+     CSS) so the translate never exposes an edge. Only the video is moved —
+     the headline is left alone so the reveal-after-video logic is untouched.
+     rAF-throttled, skipped under reduced motion. */
+  var heroSection = document.getElementById('home');
+  if (heroVideo && heroSection && !reduceMotion) {
+    var heroTicking = false;
+    var updateHeroParallax = function(){
+      heroTicking = false;
+      var y = window.scrollY || window.pageYOffset;
+      if (y > window.innerHeight) return; // only while the hero is on screen
+      heroVideo.style.transform = 'translateY(' + (y * 0.35).toFixed(1) + 'px) scale(1.12)';
+    };
+    window.addEventListener('scroll', function(){
+      if (!heroTicking){ heroTicking = true; requestAnimationFrame(updateHeroParallax); }
+    }, { passive: true });
+    updateHeroParallax();
+  }
+
+  /* ---------------- ONE MISSION photo parallax ----------------
+     Drives the --mission-par CSS variable (consumed by the goal preview
+     photo's background-position) from the section's position
+     in the viewport. rAF-throttled; skipped entirely under reduced motion. */
+  var missionSection = document.getElementById('one-mission');
+  if (missionSection && !reduceMotion) {
+    var parTicking = false;
+    var updateMissionParallax = function(){
+      parTicking = false;
+      var r = missionSection.getBoundingClientRect();
+      if (r.bottom < -100 || r.top > window.innerHeight + 100) return;
+      // -0.5..0.5 as the section travels through the viewport
+      var progress = (window.innerHeight - r.top) / (window.innerHeight + r.height) - 0.5;
+      missionSection.style.setProperty('--mission-par', (progress * 56).toFixed(1) + 'px');
+    };
+    var onParScroll = function(){
+      if (!parTicking) {
+        parTicking = true;
+        requestAnimationFrame(updateMissionParallax);
+      }
+    };
+    window.addEventListener('scroll', onParScroll, { passive: true });
+    window.addEventListener('resize', onParScroll, { passive: true });
+    updateMissionParallax();
+  }
+})();
+</script>
+
+
+
+<!-- ================= EXPLORE THE MOLECULES: three.js orbit scene =================
+     Adapted from the client's pepz-orbit-demo.html build. Same materials, lighting,
+     particle field, orbit rig, hover tooltip, and mobile drag-orbit — scoped to the
+     #explore-molecules section (absolute-positioned canvas sized from the section's
+     own bounding box) instead of a fixed fullscreen overlay, and gated by an
+     IntersectionObserver so the render loop only runs while the section is visible. -->
+<script type="module">
+import * as THREE from "three";
+
+const sectionEl = document.getElementById("explore-molecules");
+// canvas + pointer math live in the rounded scene panel now (client sketch:
+// scene box left, molecule index cards right), not the whole section
+const sceneHost = document.getElementById("molScene") || sectionEl;
+if (sectionEl) {
+
+/* ---------------------------------------------------------
+   SCENE / CAMERA / RENDERER — sized from the scene panel
+--------------------------------------------------------- */
+const scene = new THREE.Scene();
+
+function sectionSize(){
+  var r = sceneHost.getBoundingClientRect();
+  return { w: Math.max(1, r.width), h: Math.max(1, r.height) };
+}
+
+var size0 = sectionSize();
+const camera = new THREE.PerspectiveCamera(45, size0.w / size0.h, 0.1, 200);
+camera.position.set(0, 1.5, 15);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+// DPR capped at 1.75 (was 2) — meaningfully fewer pixels shaded per frame on
+// retina screens with no visible quality loss on this dark, glowy scene.
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+renderer.setSize(size0.w, size0.h);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+sceneHost.appendChild(renderer.domElement);
+
+// Guarded: renderer.setSize() (canvas realloc) is expensive, and this used
+// to run on EVERY scroll event — a major source of scroll jank. Now it
+// bails unless the section's size actually changed.
+var lastSizeW = size0.w, lastSizeH = size0.h;
+function handleResize(){
+  var s = sectionSize();
+  if (s.w === lastSizeW && s.h === lastSizeH) return;
+  lastSizeW = s.w; lastSizeH = s.h;
+  camera.aspect = s.w / s.h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(s.w, s.h);
+}
+window.addEventListener("resize", handleResize);
+// also recompute on scroll-driven layout changes (section size can change
+// independently of viewport resize, e.g. responsive reflow while scrolling)
+window.addEventListener("scroll", handleResize, { passive: true });
+if (window.ResizeObserver) {
+  new ResizeObserver(handleResize).observe(sceneHost);
+}
+
+/* ---------------------------------------------------------
+   LIGHTING — tuned for a glossy holographic look
+--------------------------------------------------------- */
+scene.add(new THREE.AmbientLight(0x224850, 1.1));
+
+const keyLight = new THREE.PointLight(0x22d3ee, 26, 40, 2);
+keyLight.position.set(6, 8, 6);
+scene.add(keyLight);
+
+const rimLight = new THREE.PointLight(0xffffff, 9, 40, 2);
+rimLight.position.set(-8, -4, -6);
+scene.add(rimLight);
+
+/* ---------------------------------------------------------
+   REFLECTION ENVIRONMENT — procedural studio-style gradient
+--------------------------------------------------------- */
+function buildEnvironmentTexture() {
+  const w = 512, h = 256;
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const ctx = c.getContext("2d");
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0.00, "#000000");
+  grad.addColorStop(0.16, "#080a0b");
+  grad.addColorStop(0.32, "#12181a");
+  grad.addColorStop(0.47, "#1b2528");
+  grad.addColorStop(0.50, "#5be6f5");
+  grad.addColorStop(0.53, "#1b2528");
+  grad.addColorStop(0.68, "#12181a");
+  grad.addColorStop(0.84, "#080a0b");
+  grad.addColorStop(1.00, "#000000");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.globalAlpha = 0.35;
+  for (const y of [h * 0.22, h * 0.78]) {
+    const streak = ctx.createLinearGradient(0, y - 14, 0, y + 14);
+    streak.addColorStop(0, "rgba(140,240,255,0)");
+    streak.addColorStop(0.5, "rgba(140,240,255,0.5)");
+    streak.addColorStop(1, "rgba(140,240,255,0)");
+    ctx.fillStyle = streak;
+    ctx.fillRect(0, y - 14, w, 28);
+  }
+  ctx.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+const envSource = buildEnvironmentTexture();
+scene.environment = pmremGenerator.fromEquirectangular(envSource).texture;
+envSource.dispose();
+pmremGenerator.dispose();
+
+/* ---------------------------------------------------------
+   PARTICLE FIELD
+--------------------------------------------------------- */
+function makeParticleTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const ctx = c.getContext("2d");
+  // Neutral white/alpha gradient (not baked cyan) so the particle dots and
+  // molecule glow sprites can be cleanly re-tinted via material.color alone
+  // (see applyMoleculeTheme below) instead of multiplying against a colored
+  // texture, which would muddy the pink "For Her" tint.
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.4, "rgba(255,255,255,0.8)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+
+const PARTICLE_COUNT = 1100;
+const particleGeo = new THREE.BufferGeometry();
+const positions = new Float32Array(PARTICLE_COUNT * 3);
+
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  const r = 8 + Math.random() * 14;
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(Math.random() * 2 - 1);
+  positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+  positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.6;
+  positions[i * 3 + 2] = r * Math.cos(phi);
+}
+particleGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+const particleMat = new THREE.PointsMaterial({
+  size: 0.09,
+  map: makeParticleTexture(),
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  color: 0x8fe9f5,
+  opacity: 0.65,
+});
+const particles = new THREE.Points(particleGeo, particleMat);
+scene.add(particles);
+
+/* ---------------------------------------------------------
+   CENTRAL HUB — pulsing wireframe core
+--------------------------------------------------------- */
+const hubGeo = new THREE.IcosahedronGeometry(1, 1);
+const hubMat = new THREE.MeshBasicMaterial({
+  color: 0x22d3ee, wireframe: true, transparent: true, opacity: 0.5,
+});
+const hub = new THREE.Mesh(hubGeo, hubMat);
+scene.add(hub);
+
+const hubCoreMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0b2a30, emissive: 0x0891a8, emissiveIntensity: 0.4,
+  roughness: 0.15, metalness: 0.3, clearcoat: 1, transparent: true, opacity: 0.35,
+});
+const hubCore = new THREE.Mesh(new THREE.IcosahedronGeometry(0.7, 2), hubCoreMat);
+scene.add(hubCore);
+
+/* ---------------------------------------------------------
+   PROCEDURAL PEPTIDE MOLECULES — ball-and-stick helical chains
+--------------------------------------------------------- */
+function mulberry32(seed) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const glowTexture = makeParticleTexture();
+
+const atomMat = new THREE.MeshPhysicalMaterial({
+  color: 0x08090a, metalness: 0.85, roughness: 0.16,
+  clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.9,
+  emissive: 0x0891a8, emissiveIntensity: 0.28,
+  iridescence: 0.25, iridescenceIOR: 1.3, iridescenceThicknessRange: [100, 380],
+});
+const atomBrightMat = new THREE.MeshPhysicalMaterial({
+  color: 0x1a2124, metalness: 0.75, roughness: 0.1,
+  clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 2.2,
+  emissive: 0x22d3ee, emissiveIntensity: 0.55,
+  iridescence: 0.4, iridescenceIOR: 1.35, iridescenceThicknessRange: [120, 420],
+});
+const atomSideMat = new THREE.MeshPhysicalMaterial({
+  color: 0x2b3033, metalness: 0.45, roughness: 0.4,
+  clearcoat: 0.65, envMapIntensity: 1.3,
+  emissive: 0x0e7490, emissiveIntensity: 0.18,
+});
+const bondMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0d0f10, metalness: 0.9, roughness: 0.24,
+  clearcoat: 0.9, clearcoatRoughness: 0.1, envMapIntensity: 1.5,
+  emissive: 0x0e7490, emissiveIntensity: 0.14,
+});
+
+function makeBond(p1, p2, radius) {
+  const dir = new THREE.Vector3().subVectors(p2, p1);
+  const len = dir.length() || 0.001;
+  const geo = new THREE.CylinderGeometry(radius, radius, len, 8);
+  const bond = new THREE.Mesh(geo, bondMat);
+  bond.position.copy(p1).addScaledVector(dir, 0.5);
+  bond.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+  return bond;
+}
+
+function buildPlaceholderMolecule(seed) {
+  const group = new THREE.Group();
+  const rand = mulberry32(seed);
+
+  const count = 7 + Math.floor(rand() * 3);
+  const radius = 0.2 + rand() * 0.08;
+  const heightStep = 0.12 + rand() * 0.04;
+  const angleStep = Math.PI * 2 / 3.2 + (rand() - 0.5) * 0.5;
+  let angle = rand() * Math.PI * 2;
+
+  const backbone = [];
+  for (let i = 0; i < count; i++) {
+    const y = (i - (count - 1) / 2) * heightStep;
+    backbone.push(new THREE.Vector3(Math.cos(angle) * radius, y, Math.sin(angle) * radius));
+    angle += angleStep;
+  }
+
+  for (let i = 0; i < backbone.length - 1; i++) {
+    group.add(makeBond(backbone[i], backbone[i + 1], 0.026));
+  }
+
+  backbone.forEach((p, i) => {
+    const bright = i % 3 === 1;
+    const atom = new THREE.Mesh(
+      new THREE.SphereGeometry(bright ? 0.1 : 0.08, 20, 20),
+      bright ? atomBrightMat : atomMat
+    );
+    atom.position.copy(p);
+    group.add(atom);
+
+    if (rand() > 0.4) {
+      const dir = new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).normalize();
+      const end = p.clone().addScaledVector(dir, 0.2 + rand() * 0.1);
+      group.add(makeBond(p, end, 0.017));
+      const side = new THREE.Mesh(new THREE.SphereGeometry(0.055, 14, 14), atomSideMat);
+      side.position.copy(end);
+      group.add(side);
+    }
+  });
+
+  const shellRadius = Math.max(0.55, count * heightStep * 0.62);
+  const cage = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(shellRadius, 1),
+    new THREE.MeshBasicMaterial({ color: 0x22d3ee, wireframe: true, transparent: true, opacity: 0.07 })
+  );
+  group.add(cage);
+  group.userData.cage = cage;
+
+  // Scale/opacity both cut roughly in half from the original (3.6x/0.42) —
+  // per "remove most of the aura/halo", each molecule keeps a soft glow
+  // without blooming into its neighbors.
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: glowTexture, color: 0x22d3ee, transparent: true,
+    blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.22,
+  }));
+  glow.scale.setScalar(shellRadius * 2.0);
+  group.add(glow);
+  group.userData.glow = glow;
+
+  group.scale.setScalar(1.35);
+  return group;
+}
+
+/* ---------------------------------------------------------
+   ORBIT RIG
+--------------------------------------------------------- */
+// Each molecule links to its real product page (slug → products/<slug>.html)
+// and carries a short blurb for the expandable index card next to the scene.
+const PEPTIDES = [
+  { name: "BPC-157",     tag: "Tissue repair",   slug: "bpc-157",
+    desc: "Body Protection Compound — accelerates repair of tendons, ligaments, and gut lining by promoting new blood-vessel growth into slow-healing tissue." },
+  { name: "TB-500",      tag: "Recovery",        slug: "tb-500",
+    desc: "Thymosin β4 fragment that speeds tissue regeneration and calms inflammation — often paired with BPC-157 after strains, tears, or surgery." },
+  { name: "Sermorelin",  tag: "GHRH analog",     slug: "sermorelin",
+    desc: "GHRH analog that restores the body's own growth-hormone output — anti-aging benefits with support for lean muscle and deeper sleep." },
+  { name: "Ipamorelin",  tag: "GH secretagogue", slug: "cjc-1295-ipamorelin",
+    desc: "Selective GH secretagogue that nudges natural growth-hormone pulses overnight — lean mass and recovery without appetite or cortisol spikes." },
+  { name: "CJC-1295",    tag: "GH secretagogue", slug: "cjc-1295-ipamorelin",
+    desc: "Long-acting GHRH analog that amplifies the body's natural GH rhythm — typically stacked with Ipamorelin for compounding effect." },
+  { name: "Tesamorelin", tag: "GHRH analog",     slug: "tesamorelin",
+    desc: "GHRH analog clinically shown to reduce visceral fat while supporting lean body composition and metabolic health." },
+];
+
+function openMoleculeProduct(node){
+  if (node && node.info && node.info.slug) {
+    window.location.href = "products/" + node.info.slug + ".html";
+  }
+}
+
+const nodes = [];
+
+PEPTIDES.forEach((info, i) => {
+  const plane = new THREE.Group();
+  plane.rotation.x = (Math.random() - 0.5) * 1.1;
+  plane.rotation.z = (Math.random() - 0.5) * 0.6;
+  scene.add(plane);
+
+  const mesh = buildPlaceholderMolecule(i * 977 + 13);
+  plane.add(mesh);
+
+  const line = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
+    new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.12 })
+  );
+  scene.add(line);
+
+  nodes.push({
+    plane, mesh, line, glow: mesh.userData.glow, cage: mesh.userData.cage,
+    radius: 3.7 + i * 1.05,
+    angle: Math.random() * Math.PI * 2,
+    speed: 0.12 + Math.random() * 0.1,
+    bobFreq: 0.6 + Math.random() * 0.5,
+    bobAmp: 0.25 + Math.random() * 0.2,
+    phase: Math.random() * Math.PI * 2,
+    hoverT: 0,
+    info,
+  });
+});
+
+/* ---------------------------------------------------------
+   MOLECULE INDEX CARDS — right-hand sidebar (client sketch).
+   Built from the same PEPTIDES/nodes data as the 3D scene:
+   hovering a card highlights its molecule in orbit (via
+   listHoverNode, folded into the hover logic in frame()), and
+   hovering a molecule in the scene lights up its card (.is-hot).
+   The "+" expands the card in place with a blurb + product link.
+--------------------------------------------------------- */
+let listHoverNode = null;
+const listEl = document.getElementById("molList");
+if (listEl) {
+  const ICON_SVG =
+    '<svg class="mol-card-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">' +
+    '<circle cx="9" cy="22" r="3.2" stroke="currentColor" stroke-width="1.5"/>' +
+    '<circle cx="21" cy="9" r="2.6" stroke="currentColor" stroke-width="1.5"/>' +
+    '<circle cx="25" cy="21" r="2.2" stroke="currentColor" stroke-width="1.5"/>' +
+    '<circle cx="15" cy="14" r="1.6" fill="currentColor"/>' +
+    '<path d="M11.5 19.8 14 15.5M16.3 12.9 19.5 10.7M16.4 15 23 20M9 18.8V13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>' +
+    '</svg>';
+  nodes.forEach(function (n) {
+    const card = document.createElement("article");
+    card.className = "mol-card";
+    card.innerHTML =
+      '<div class="mol-card-head">' +
+        ICON_SVG +
+        '<div class="mol-card-names">' +
+          '<span class="mol-card-name">' + n.info.name + '</span>' +
+          '<span class="mol-card-tag">' + n.info.tag + '</span>' +
+        '</div>' +
+        '<button type="button" class="mol-card-plus" aria-expanded="false" aria-label="More about ' + n.info.name + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="mol-card-body">' +
+        '<p>' + n.info.desc + '</p>' +
+        '<a href="products/' + n.info.slug + '.html">View product &rarr;</a>' +
+      '</div>';
+    card.addEventListener("mouseenter", function () { listHoverNode = n; });
+    card.addEventListener("mouseleave", function () { if (listHoverNode === n) listHoverNode = null; });
+    card.querySelector(".mol-card-plus").addEventListener("click", function () {
+      const open = card.classList.toggle("open");
+      this.setAttribute("aria-expanded", String(open));
+    });
+    n.card = card;
+    listEl.appendChild(card);
+  });
+}
+
+/* ---------------------------------------------------------
+   THEME-REACTIVE RECOLOR — "For Her" re-tints every glowing accent in this
+   scene (particles, hub wireframe/core glow, molecule cages/glow sprites,
+   orbit lines) from cyan to pink, while leaving the dark #050505 backdrop
+   and the neutral metal atom/bond base colors untouched. Exposed on
+   window so the page's global setGender() (outside this module script)
+   can call it whenever the header Him/Her switch is clicked.
+--------------------------------------------------------- */
+// Palette dialed back from pure-neon to match the muted --brand/--brand-
+// glow-rgb CSS variables (see :root and html.theme-her) — same hue family,
+// lower saturation, so the scene reads as calm rather than a highlighter.
+const MOLECULE_ACCENT = {
+  him: {
+    particle: 0x9fd9de, wire: 0x2fb8c7,
+    hubCoreEmissive: 0x0d7d8f, atomEmissive: 0x0d7d8f,
+    atomBrightEmissive: 0x2fb8c7, atomSideEmissive: 0x14707d, bondEmissive: 0x14707d,
+    cage: 0x2fb8c7, glow: 0x2fb8c7, line: 0x2fb8c7,
+  },
+  her: {
+    particle: 0xffb0b8, wire: 0xf2607a,
+    hubCoreEmissive: 0x8a2740, atomEmissive: 0x8a2740,
+    atomBrightEmissive: 0xf2607a, atomSideEmissive: 0x7a2438, bondEmissive: 0x7a2438,
+    cage: 0xf2607a, glow: 0xf2607a, line: 0xf2607a,
+  },
+};
+
+function applyMoleculeTheme(isHer) {
+  const a = isHer ? MOLECULE_ACCENT.her : MOLECULE_ACCENT.him;
+  particleMat.color.setHex(a.particle);
+  hubMat.color.setHex(a.wire);
+  hubCoreMat.emissive.setHex(a.hubCoreEmissive);
+  atomMat.emissive.setHex(a.atomEmissive);
+  atomBrightMat.emissive.setHex(a.atomBrightEmissive);
+  atomSideMat.emissive.setHex(a.atomSideEmissive);
+  bondMat.emissive.setHex(a.bondEmissive);
+  nodes.forEach(function (n) {
+    if (n.cage) n.cage.material.color.setHex(a.cage);
+    if (n.glow) n.glow.material.color.setHex(a.glow);
+    if (n.line) n.line.material.color.setHex(a.line);
+  });
+}
+window.__pepzApplyMoleculeTheme = applyMoleculeTheme;
+// Sync immediately in case the header switch was already toggled before
+// this module finished loading/executing.
+applyMoleculeTheme(document.documentElement.classList.contains('theme-her'));
+
+/* ---------------------------------------------------------
+   CAMERA ORBIT + INTERACTION — scoped to the section element
+   (pointer position tracking stays on window so it works even
+   when the pointer starts outside the canvas, but all visual/
+   coordinate math is relative to the section's own rect).
+--------------------------------------------------------- */
+const raycaster = new THREE.Raycaster();
+const pointerNDC = new THREE.Vector2(-10, -10);
+const tooltipEl = document.getElementById("molTooltip");
+const tooltipName = tooltipEl.querySelector(".name");
+const tooltipTag = tooltipEl.querySelector(".tag");
+
+let hoveredNode = null;
+let selectedNode = null;
+let lastShownNode = null;
+let lastHotNode = null; // card <-> scene hover sync
+
+const orbitRadius = camera.position.length();
+const baseTheta = Math.atan2(camera.position.x, camera.position.z);
+const basePhi = Math.acos(THREE.MathUtils.clamp(camera.position.y / orbitRadius, -1, 1));
+let targetTheta = baseTheta, targetPhi = basePhi;
+let currentTheta = baseTheta, currentPhi = basePhi;
+// Zoomable camera distance (pinch on touch) — smoothed toward targetRadius
+// in the frame loop, same easing pattern as theta/phi.
+const MIN_RADIUS = 6, MAX_RADIUS = 26;
+let targetRadius = orbitRadius, currentRadius = orbitRadius;
+
+let activePointerType = "mouse";
+let isDragging = false;
+let dragMoved = false;
+let dragStartX = 0, dragStartY = 0;
+let dragStartTheta = baseTheta, dragStartPhi = basePhi;
+let dragStartTime = 0;
+let pointerInsideSection = false;
+// live touch points on the canvas, for pinch-to-zoom (mobile)
+const activeTouches = new Map();
+let pinchStartDist = 0, pinchStartRadius = 0, isPinching = false;
+
+function touchDistance(){
+  const pts = Array.from(activeTouches.values());
+  const dx = pts[0].x - pts[1].x, dy = pts[0].y - pts[1].y;
+  return Math.max(1, Math.hypot(dx, dy));
+}
+
+function updatePointerNDC(clientX, clientY) {
+  var rect = sceneHost.getBoundingClientRect();
+  pointerInsideSection = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+  // NDC coords relative to the section's own box, not the whole window
+  pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  tooltipEl.style.left = (clientX - rect.left) + "px";
+  tooltipEl.style.top = (clientY - rect.top) + "px";
+}
+
+function raycastNode() {
+  if (!pointerInsideSection) return null;
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hits = raycaster.intersectObjects(nodes.map((n) => n.mesh), true);
+  if (!hits.length) return null;
+  return nodes.find((n) => hits[0].object.parent === n.mesh || n.mesh === hits[0].object) || null;
+}
+
+renderer.domElement.addEventListener("pointerdown", (e) => {
+  activePointerType = e.pointerType;
+  updatePointerNDC(e.clientX, e.clientY);
+  if (e.pointerType === "touch") {
+    activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activeTouches.size === 2) {
+      // second finger down: switch from orbit-drag to pinch-zoom
+      isPinching = true;
+      isDragging = false;
+      dragMoved = true; // a pinch is never a tap
+      pinchStartDist = touchDistance();
+      pinchStartRadius = targetRadius;
+    } else if (activeTouches.size === 1) {
+      isDragging = true;
+      dragMoved = false;
+      dragStartTime = performance.now();
+      dragStartX = e.clientX; dragStartY = e.clientY;
+      dragStartTheta = targetTheta; dragStartPhi = targetPhi;
+    }
+  }
+});
+
+// Desktop: click a hovered molecule to open its product page. Mouse moves
+// don't orbit-drag (hover parallax only), so a plain click is unambiguous.
+renderer.domElement.addEventListener("click", (e) => {
+  if (activePointerType === "touch") return;
+  updatePointerNDC(e.clientX, e.clientY);
+  const hit = raycastNode();
+  if (hit) openMoleculeProduct(hit);
+});
+
+// pointer position tracking stays on window (so movement is smooth even if
+// the pointer briefly leaves the canvas bounds), but all math above is
+// clipped/scoped to the section's own rect via pointerInsideSection.
+window.addEventListener("pointermove", (e) => {
+  activePointerType = e.pointerType;
+  updatePointerNDC(e.clientX, e.clientY);
+
+  if (e.pointerType === "touch") {
+    if (activeTouches.has(e.pointerId)) {
+      activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+    if (isPinching && activeTouches.size >= 2) {
+      // pinch out (fingers apart) → smaller radius → zoom in, and vice versa
+      const scale = pinchStartDist / touchDistance();
+      targetRadius = THREE.MathUtils.clamp(pinchStartRadius * scale, MIN_RADIUS, MAX_RADIUS);
+      return;
+    }
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) dragMoved = true;
+    targetTheta = dragStartTheta - dx * 0.006;
+    targetPhi = THREE.MathUtils.clamp(dragStartPhi - dy * 0.006, 0.35, Math.PI - 0.35);
+  } else {
+    targetTheta = baseTheta + pointerNDC.x * 0.12;
+    targetPhi = THREE.MathUtils.clamp(basePhi - pointerNDC.y * 0.07, 0.35, Math.PI - 0.35);
+  }
+});
+
+window.addEventListener("pointerup", (e) => {
+  if (e.pointerType !== "touch") return;
+  activeTouches.delete(e.pointerId);
+  if (activeTouches.size < 2) isPinching = false;
+  isDragging = false;
+  const wasQuickTap = !dragMoved && (performance.now() - dragStartTime) < 400;
+  if (wasQuickTap) {
+    const hit = raycastNode();
+    if (hit && hit === selectedNode) {
+      // second tap on the already-selected molecule opens its product page
+      openMoleculeProduct(hit);
+      return;
+    }
+    // first tap selects (shows the name tooltip); tap empty space deselects
+    selectedNode = hit;
+  }
+});
+
+window.addEventListener("pointercancel", (e) => {
+  activeTouches.delete(e.pointerId);
+  if (activeTouches.size < 2) isPinching = false;
+  isDragging = false;
+});
+
+function showTooltip(node) {
+  if (node) {
+    tooltipName.textContent = node.info.name;
+    tooltipTag.textContent = node.info.tag;
+    tooltipEl.style.opacity = "1";
+  } else {
+    tooltipEl.style.opacity = "0";
+  }
+}
+
+/* ---------------------------------------------------------
+   ANIMATION LOOP — only runs while #explore-molecules is
+   actually in the viewport (IntersectionObserver gate below).
+   Pausing/resuming does not reset scene state (positions,
+   angles, camera orbit all persist across pause/resume).
+--------------------------------------------------------- */
+const clock = new THREE.Clock();
+let rafId = null;
+let sceneRunning = false;
+
+function frame() {
+  rafId = requestAnimationFrame(frame);
+  const t = clock.getElapsedTime();
+
+  hub.rotation.y += 0.003;
+  hub.rotation.x += 0.0012;
+  hubCore.scale.setScalar(1 + Math.sin(t * 1.4) * 0.06);
+
+  particles.rotation.y = t * 0.015;
+  particles.rotation.x = Math.sin(t * 0.05) * 0.05;
+
+  if (activePointerType !== "touch") {
+    hoveredNode = raycastNode();
+    renderer.domElement.style.cursor = hoveredNode ? "pointer" : "default";
+  }
+  // sceneNode drives the in-scene tooltip; activeNode (scene hover OR a
+  // hovered index card) drives the molecule highlight + card .is-hot state
+  const sceneNode = activePointerType === "touch" ? selectedNode : hoveredNode;
+  const activeNode = listHoverNode || sceneNode;
+  if (sceneNode !== lastShownNode) {
+    lastShownNode = sceneNode;
+    showTooltip(sceneNode);
+  }
+  if (activeNode !== lastHotNode) {
+    if (lastHotNode && lastHotNode.card) lastHotNode.card.classList.remove("is-hot");
+    if (activeNode && activeNode.card) activeNode.card.classList.add("is-hot");
+    lastHotNode = activeNode;
+  }
+
+  nodes.forEach((n) => {
+    n.angle += n.speed * 0.01;
+
+    const x = Math.cos(n.angle) * n.radius;
+    const z = Math.sin(n.angle) * n.radius;
+    const y = Math.sin(t * n.bobFreq + n.phase) * n.bobAmp;
+
+    n.mesh.position.set(x, y, z);
+    n.mesh.rotation.y += 0.006;
+    n.mesh.rotation.x += 0.002;
+
+    const target = n === activeNode ? 1 : 0;
+    n.hoverT += (target - n.hoverT) * 0.12;
+    n.mesh.scale.setScalar(1 + n.hoverT * 0.5);
+
+    if (n.glow) {
+      // base matches the 0.22 resting opacity set at creation (see
+      // makeMoleculeGroup) — this per-frame update only adds the hover boost
+      // on top of that, so it can't drift back up to the old 0.42 value.
+      n.glow.material.opacity = 0.22 + n.hoverT * 0.35;
+    }
+
+    const worldPos = new THREE.Vector3();
+    n.mesh.getWorldPosition(worldPos);
+    const posAttr = n.line.geometry.attributes.position;
+    posAttr.setXYZ(0, 0, 0, 0);
+    posAttr.setXYZ(1, worldPos.x, worldPos.y, worldPos.z);
+    posAttr.needsUpdate = true;
+    n.line.material.opacity = 0.08 + n.hoverT * 0.25;
+  });
+
+  currentTheta += (targetTheta - currentTheta) * 0.08;
+  currentPhi += (targetPhi - currentPhi) * 0.08;
+  currentRadius += (targetRadius - currentRadius) * 0.12;
+  camera.position.x = currentRadius * Math.sin(currentPhi) * Math.sin(currentTheta);
+  camera.position.z = currentRadius * Math.sin(currentPhi) * Math.cos(currentTheta);
+  camera.position.y = currentRadius * Math.cos(currentPhi);
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+}
+
+var sceneToggleBtn = document.getElementById("molSceneToggle");
+function updateToggleUI(running){
+  if (!sceneToggleBtn) return;
+  sceneToggleBtn.classList.toggle("is-playing", running);
+  sceneToggleBtn.setAttribute("aria-label", running ? "Stop molecule animation" : "Play molecule animation");
+}
+
+function startScene(){
+  if (sceneRunning) return;
+  sceneRunning = true;
+  handleResize();
+  frame();
+  updateToggleUI(true);
+  // .scene-playing switches the canvas to touch-action:none (see CSS) so a
+  // touch-drag orbits the camera instead of scrolling the page.
+  sectionEl.classList.add("scene-playing");
+}
+function stopScene(){
+  if (!sceneRunning) return;
+  sceneRunning = false;
+  if (rafId !== null){
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  showTooltip(null);
+  lastShownNode = null;
+  updateToggleUI(false);
+  // Paused/stopped: hand touch back to the page so visitors can scroll
+  // straight through this section instead of the canvas eating the gesture.
+  sectionEl.classList.remove("scene-playing");
+}
+
+// Manual stop button: the scene still auto-plays on scroll-into-view (see
+// the IntersectionObserver below), but a visitor can explicitly stop it —
+// this real render loop is meaningful GPU/CPU/RAM cost while it runs, and
+// not everyone wants it running just because they scrolled past. Once
+// stopped by hand, scrolling away and back won't silently restart it; the
+// visitor has to tap Play again to signal they actually want it running.
+var userPausedScene = false;
+if (sceneToggleBtn) {
+  sceneToggleBtn.addEventListener("click", function(){
+    if (sceneRunning) {
+      userPausedScene = true;
+      stopScene();
+    } else {
+      userPausedScene = false;
+      startScene();
+    }
+  });
+}
+
+// only render while the section is actually in the viewport — pause on
+// leave (GPU/battery), resume on enter (unless the visitor manually
+// stopped it — see userPausedScene above), without resetting scene state.
+if (window.IntersectionObserver) {
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting) {
+        if (!userPausedScene) startScene();
+      } else {
+        stopScene();
+      }
+    });
+  }, { threshold: 0.05 });
+  io.observe(sectionEl);
+} else {
+  // no IntersectionObserver support: fall back to always-on
+  startScene();
+}
+
+}
+</script>
+
+<script src="assets/grainient.js" defer></script>
+<script src="assets/quiz.js" defer></script>
+</body>
+</html>

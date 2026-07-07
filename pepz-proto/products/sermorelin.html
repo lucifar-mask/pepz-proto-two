@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sermorelin — PEPZ</title>
+<meta name="description" content="GHRH analog that restores natural growth-hormone output — anti-aging benefits with support for lean muscle mass. Pharmaceutical-grade peptide, prescription required.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem('pepz-theme')==='her')document.documentElement.classList.add('theme-her');}catch(e){}</script>
+<link rel="stylesheet" href="../assets/product.css">
+<link rel="stylesheet" href="../assets/shared.css">
+</head>
+<body>
+<div id="siteGradientBg" aria-hidden="true"></div>
+<canvas id="grainientCanvas" aria-hidden="true"></canvas>
+
+<!-- ================= HEADER (shared site header) ================= -->
+<header class="site-header" id="siteHeader">
+  <a class="logo" href="../index.html#home"><span>PEPZ</span>.</a>
+  <nav class="header-nav" aria-label="Primary">
+    <a href="../index.html#home" class="nav-link">Home</a>
+    <a href="../products.html" class="nav-link">Products</a>
+    <a href="../science.html" class="nav-link">Science</a>
+    <a href="../about.html" class="nav-link">About</a>
+    <a href="../legal.html" class="nav-link">Legal</a>
+  </nav>
+  <div class="header-actions">
+    <div class="gender-switch" role="tablist" aria-label="Shop by">
+      <button class="gender-switch-btn active" id="tabHim" data-gender="him" role="tab" aria-selected="true">For Him</button>
+      <button class="gender-switch-btn" id="tabHer" data-gender="her" role="tab" aria-selected="false">For Her</button>
+    </div>
+    <button class="icon-btn" id="accountBtn" aria-label="Account / Sign in">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="btn-primary pdp-book" id="bookConsultBtn">Book Consultation</button>
+    <button class="icon-btn hamburger-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+<div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+  <div class="mobile-nav-panel">
+    <button class="icon-btn mobile-nav-close" id="mobileNavCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="mobile-nav-links">
+      <a href="../index.html#home" class="nav-link">Home</a>
+      <a href="../products.html" class="nav-link">Products</a>
+      <a href="../science.html" class="nav-link">Science</a>
+      <a href="../about.html" class="nav-link">About</a>
+      <a href="../legal.html" class="nav-link">Legal</a>
+    </nav>
+    <div class="mobile-nav-actions">
+      <button class="icon-btn" id="mobileAccountBtn" aria-label="Account / Sign in">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z" stroke="currentColor" stroke-width="1.6"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.6 2.2 8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Account</span>
+      </button>
+      <button class="btn-primary" id="mobileBookBtn">Book Consultation</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= PRODUCT DETAIL ================= -->
+<main class="pdp">
+  <a class="pdp-back" href="../products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to All Products
+  </a>
+
+  <div class="pdp-grid">
+    <!-- LEFT: info -->
+    <div class="pdp-info">
+      <h1 class="pdp-name">Sermorelin</h1>
+      <p class="pdp-desc">GHRH analog that restores natural growth-hormone output — anti-aging benefits with support for lean muscle mass.</p>
+
+      <div class="pdp-accordion" id="qcAccordion">
+        <button class="pdp-accordion-head" id="qcToggle" aria-expanded="false" aria-controls="qcBody">
+          <span>Quality &amp; Compliance</span>
+          <span class="pdp-accordion-icon" aria-hidden="true"></span>
+        </button>
+        <div class="pdp-accordion-body" id="qcBody">
+          <div>
+            <ul class="pdp-accordion-list">
+            <li>Compounded in a USA-certified <span class="accent">503A/503B</span> pharmacy</li>
+            <li>Third-party tested with <span class="accent">full COA documentation</span></li>
+            <li>Pharmaceutical-grade purity — prescription required</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="pdp-cta-row">
+        <button class="btn-primary" id="addRoutineBtn">Add To Routine</button>
+      </div>
+
+      <p class="pdp-rx">Prescription required.</p>
+    </div>
+
+    <!-- RIGHT: media -->
+    <div class="pdp-media">
+      <div class="pdp-stage">
+        <span class="pdp-badge">Longevity</span>
+        <div class="pdp-slides" id="pdpSlides">
+        <div class="pdp-slide active"><img src="../assets/sermorelin-1-C2d9qNKH.png.png" alt="Sermorelin — pharmaceutical-grade vial"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ================= TAG MARQUEE ================= -->
+<div class="pdp-marquee" aria-hidden="true">
+  <div class="pdp-marquee-inner"><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span><span class="pdp-marquee-item">Growth Hormone</span><span class="pdp-marquee-item">Anti-Aging</span><span class="pdp-marquee-item">Muscle Growth</span><span class="pdp-marquee-item">Sleep Optimization</span></div>
+</div>
+
+<!-- ================= TRUST BAR ================= -->
+<footer class="pepz-footer">
+  <div class="perf-toggle-row">
+    <span class="perf-toggle-label">Animated background</span>
+    <label class="perf-toggle">
+      <input type="checkbox" id="particlesToggle" checked aria-label="Toggle animated gradient background">
+      <span class="perf-toggle-track"><span class="perf-toggle-thumb"></span></span>
+    </label>
+  </div>
+
+  <div class="pepz-footer-grid">
+    <div class="pepz-footer-brand">
+      <a class="logo" href="../index.html#home"><span>PEPZ</span>.</a>
+      <p class="pepz-footer-tagline">&ldquo;Optimizing the human engine for the 21st century.&rdquo;</p>
+      <p class="pepz-footer-note">PEPZ is a technology platform, not a pharmacy. We connect patients with licensed physicians and accredited compounding pharmacies.</p>
+    </div>
+    <div class="pepz-footer-col"><h5>Shop</h5><ul><li><a href="../products.html">Fitness</a></li><li><a href="../products.html">Longevity</a></li><li><a href="../products.html">Beauty</a></li><li><a href="../products.html">Recovery</a></li></ul></div>
+    <div class="pepz-footer-col"><h5>Legal</h5><ul><li><a href="../legal.html#prescription-policy">Prescription Policy</a></li><li><a href="../legal.html#lab-reports">Lab Reports</a></li><li><a href="../legal.html#privacy">Privacy</a></li><li><a href="../legal.html#terms">Terms</a></li></ul></div>
+    <div class="pepz-footer-col"><h5>Connect</h5><ul><li><a href="#" rel="noopener">Instagram</a></li><li><a href="#" rel="noopener">Facebook</a></li><li><a href="#" rel="noopener">YouTube</a></li><li><a href="../index.html#contact">Support</a></li></ul></div>
+  </div>
+  <div class="pepz-footer-trust">
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6 2.2v4.6c0 4-2.6 6.9-6 8.2-3.4-1.3-6-4.2-6-8.2V4.7l6-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Rx-Verified Marketplace</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><rect x="4" y="9" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 9V6.5a3.5 3.5 0 0 1 7 0V9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>HIPAA Compliant Infrastructure</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><path d="M8 3h4M8.5 3v4.2L4.8 14a1.6 1.6 0 0 0 1.4 2.4h7.6a1.6 1.6 0 0 0 1.4-2.4L11.5 7.2V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Third-Party Lab Tested &middot; COA Available</span>
+    <span><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 6.5v7M6.5 10h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>18+ Only &middot; Prescription Required</span>
+  </div>
+  <p class="pepz-footer-bottom">&copy; 2026 PEPZ BIO-TECH. ALL RIGHTS RESERVED. &middot; <a href="mailto:support@pepz.com">support@pepz.com</a></p>
+</footer>
+
+<script>
+(function(){
+  /* ---- Quality & Compliance accordion ---- */
+  var acc = document.getElementById('qcAccordion');
+  var toggle = document.getElementById('qcToggle');
+  toggle.addEventListener('click', function(){
+    var open = acc.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+
+  /* ---- Image carousel (dots) ---- */
+  var dots = Array.prototype.slice.call(document.querySelectorAll('.pdp-dot'));
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.pdp-slide'));
+  dots.forEach(function(dot){
+    dot.addEventListener('click', function(){
+      var i = parseInt(dot.getAttribute('data-slide'), 10);
+      dots.forEach(function(d){ d.classList.remove('active'); });
+      slides.forEach(function(s){ s.classList.remove('active'); });
+      dot.classList.add('active');
+      if (slides[i]) slides[i].classList.add('active');
+    });
+  });
+
+  /* ---- For Him / For Her theme switch (live re-theme, same as index.html) ---- */
+  var tabHim = document.getElementById('tabHim');
+  var tabHer = document.getElementById('tabHer');
+  function setGender(g){
+    var isHer = g === 'her';
+    document.documentElement.classList.toggle('theme-her', isHer);
+    tabHim.classList.toggle('active', !isHer);
+    tabHim.setAttribute('aria-selected', String(!isHer));
+    tabHer.classList.toggle('active', isHer);
+    tabHer.setAttribute('aria-selected', String(isHer));
+    try { localStorage.setItem('pepz-theme', g); } catch(e){}
+  }
+  // restore persisted theme choice
+  try { if (localStorage.getItem('pepz-theme') === 'her') setGender('her'); else setGender('him'); } catch(e){}
+  tabHim.addEventListener('click', function(){ setGender('him'); });
+  tabHer.addEventListener('click', function(){ setGender('her'); });
+
+  /* ---- Header "Book Consultation" → main consultation flow ---- */
+  var book = document.getElementById('bookConsultBtn');
+  if (book) book.addEventListener('click', function(){ window.location.href = '../index.html#contact'; });
+
+  /* ---- "Add To Routine" → Build My Routine section on the main site ---- */
+  var routine = document.getElementById('addRoutineBtn');
+  if (routine) routine.addEventListener('click', function(){ window.location.href = '../index.html#build-routine'; });
+})();
+
+  // account + mobile drawer buttons -> consultation flow
+  (function(){
+    var dest = '../index.html#contact';
+    ['accountBtn','mobileAccountBtn','mobileBookBtn'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener('click', function(){ window.location.href = dest; });
+    });
+    window.__pepzWireActions = true;
+  })();
+</script>
+<script src="../assets/grainient.js" defer></script>
+<script src="../assets/quiz.js" defer></script>
+</body>
+</html>
